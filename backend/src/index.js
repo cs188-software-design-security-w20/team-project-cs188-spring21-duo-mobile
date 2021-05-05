@@ -1,11 +1,13 @@
 const express = require("express");
 const bodyParser = require('body-parser');
+const cors = require('cors');
 require('dotenv').config()
 
 const { getRoutes } = require("./routes/index.js");
 
 function startServer({ port = process.env.PORT } = {}) {
   const app = express();
+  app.use(cors());
   app.use(bodyParser.json());
   app.use("/api", getRoutes());
   app.get("/test", (req, res) => {
@@ -22,7 +24,6 @@ function startServer({ port = process.env.PORT } = {}) {
           closeFunction(resolveClose);
         });
       };
-
       handleTerminate(server);
       resolve(server);
     });
