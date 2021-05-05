@@ -3,3 +3,4 @@ package-lock.json
 .env
 hopscotch-ddd21-firebase-adminsdk-4yk8i-ab755b447c.json
 .DS_Store
+yarn.lock
