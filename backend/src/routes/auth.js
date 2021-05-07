@@ -3,7 +3,47 @@ const { uuid } = require("uuidv4");
 const { firebase, admin } = require("../firebase-init.js");
 const client = require("../twilio-init.js");
 const db = firebase.firestore();
-require('dotenv').config();
+require("dotenv").config();
+
+function authMiddleware(req, res, next) {
+  // check user is logged into firebase via token
+  // and that said user has the right 2-fac auth token
+  const [loginToken, twoFacToken] = [
+    req.headers.login_token,
+    req.headers.two_fac_token,
+  ];
+
+  if (loginToken == null || twoFacToken == null) {
+    console.log("auth tokens not found");
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+
+  admin
+    .auth()
+    .verifyIdToken(loginToken)
+    .then((decodedToken) => {
+      db.collection("2_fac")
+        .doc(decodedToken.email)
+        .get()
+        .then((firebase_res) => {
+          const twoFacEntry = firebase_res.data();
+          if (twoFacToken == twoFacEntry.token) {
+            next();
+          } else {
+            console.log("2fac token doesn't match");
+            return res.status(401).send({ error: "Unauthorized" });
+          }
+        })
+        .catch(() => {
+          console.log("couldn't get a 2fac entry");
+          return res.status(401).send({ error: "Unauthorized" });
+        });
+    })
+    .catch(() => {
+      console.log("couldn't verify login token");
+      return res.status(401).send({ error: "Unauthorized" });
+    });
+}
 
 function getAuthRoutes() {
   const router = express.Router();
@@ -121,8 +161,10 @@ async function handle2FactorAuthentication(req, res) {
   if (!sessionId || !code) {
     return res.status(400).send({ error: "Invalid request" });
   }
-  db.collection("2_fac").doc(email).get()
-    .then(firebase_res => {
+  db.collection("2_fac")
+    .doc(email)
+    .get()
+    .then((firebase_res) => {
       const twoFacEntry = firebase_res.data();
       if (sessionId == twoFacEntry.sessionId && code === twoFacEntry.code) {
         return res.status(200).send({ token: twoFacEntry.token });
@@ -134,4 +176,4 @@ async function handle2FactorAuthentication(req, res) {
     });
 }
 
-module.exports = { getAuthRoutes };
+module.exports = { authMiddleware, getAuthRoutes };
