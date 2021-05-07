@@ -3,7 +3,7 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import axios from "axios";
 import "firebase/firestore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_DEMO_FIREBASE_API_KEY,
@@ -36,7 +36,16 @@ function App() {
   const [code, setCode] = useState("");
 
   // for authenticated state
-  const [token, setToken] = useState(null);
+  const [twoFacToken, setTwoFacToken] = useState(localStorage.getItem('twoFacToken'));
+  const [loginToken, setLoginToken] = useState(localStorage.getItem('loginToken'));
+
+  const [songs, setSongs] = useState("");
+
+  useEffect(() => {
+    if (twoFacToken && loginToken) {
+      setAuthState(auth_states.AUTHENTICATED);
+    }
+  }, []);
 
   function register() {
     firebase
@@ -51,6 +60,8 @@ function App() {
         return firebase.auth().currentUser.getIdToken(true);
       })
       .then((idToken) => {
+        setLoginToken(idToken);
+        localStorage.setItem('loginToken', idToken);
         return axios.post("http://localhost:5000/api/auth/login", {
           idToken,
         });
@@ -62,11 +73,6 @@ function App() {
           setSessionId(res.data.sessionId);
           setAuthState(auth_states.TWOFACTOR);
         }
-      })
-      .catch((error) => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log(errorCode, errorMessage);
       });
   }
 
@@ -79,6 +85,8 @@ function App() {
         return user.getIdToken(true);
       })
       .then((idToken) => {
+        setLoginToken(idToken);
+        localStorage.setItem('loginToken', idToken);
         return axios.post("http://localhost:5000/api/auth/login", {
           idToken,
         });
@@ -91,10 +99,6 @@ function App() {
           setSessionId(res.data.sessionId);
           setAuthState(auth_states.TWOFACTOR);
         }
-      })
-      .catch((error) => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
       });
   }
 
@@ -109,7 +113,8 @@ function App() {
       .then((res) => {
         const { token, error } = res.data;
         if (res.status === 200) {
-          setToken(token);
+          setTwoFacToken(token);
+          localStorage.setItem('twoFacToken', token)
           setAuthState(auth_states.AUTHENTICATED);
         } else {
           console.log(error);
@@ -119,7 +124,25 @@ function App() {
   }
 
   const Authenticated = () => {
-    return <div>Welcome!</div>;
+    return <div>Welcome!
+      <div>
+        <button onClick={() => {
+          axios.get("http://localhost:5000/api/songs/nearby?lat=34.06892&lng=-118.445183", {
+            headers: {
+              login_token: loginToken,
+              two_fac_token: twoFacToken
+            }
+          })
+            .then((res) => {
+              if (res.status === 200) {
+                setSongs(res.data);
+              }
+            });
+        }}>get songs</button>
+        <button onClick={() => setPhone("")}>refresh phone #</button>
+        <div>{JSON.stringify(songs)}</div>
+      </div>
+    </div>;
   };
 
   return <div className="App">

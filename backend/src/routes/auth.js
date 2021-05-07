@@ -3,7 +3,54 @@ const { uuid } = require("uuidv4");
 const { firebase, admin } = require("../firebase-init.js");
 const client = require("../twilio-init.js");
 const db = firebase.firestore();
-require('dotenv').config();
+require("dotenv").config();
+
+/*
+-- Request Headers --
+login_token: generated on client-side via firebase.auth().currentUser.getIdToken(true)
+two_fac_token: received from this server after passing 2-fac
+
+Parse the login token via Firebase Admin API. Get the email. Get the two-fac token
+associated with this email in 2fac db. Check that this two-fac token matches the
+two-fac token received in the headers. If all's well, user checks out.
+*/
+function authMiddleware(req, res, next) {
+  const [loginToken, twoFacToken] = [
+    req.headers.login_token,
+    req.headers.two_fac_token,
+  ];
+
+  if (loginToken == null || twoFacToken == null) {
+    console.log("auth tokens not found");
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+
+  admin
+    .auth()
+    .verifyIdToken(loginToken)
+    .then((decodedToken) => {
+      db.collection("2_fac")
+        .doc(decodedToken.email)
+        .get()
+        .then((firebase_res) => {
+          const twoFacEntry = firebase_res.data();
+          if (twoFacToken == twoFacEntry.token) {
+            next();
+          } else {
+            console.log("2fac token doesn't match");
+            return res.status(401).send({ error: "Unauthorized" });
+          }
+        })
+        .catch(() => {
+          console.log("couldn't get a 2fac entry");
+          return res.status(401).send({ error: "Unauthorized" });
+        });
+    })
+    .catch(() => {
+      console.log("couldn't verify login token");
+      return res.status(401).send({ error: "Unauthorized" });
+    });
+}
 
 function getAuthRoutes() {
   const router = express.Router();
@@ -44,10 +91,13 @@ from the frontend by doing firebase.auth().currentUser.getIdToken(true).
 -- Response --
 sessionId or error
 
-Check if session matches existing two-factor authentication session and that
-the user entered code matches the code from this login session. If we pass
-these checks then return the user the token they can use to make requests
-to other endpoints.
+Check if firebase id token is valid through firebase admin API. If so,
+establish a new 2-fac session by creating a new document in 2_fac with
+- sessionId: uuid generated for the server and the user to keep
+track of this transaction
+- code: the 4-digit code the user should enter
+- token: uuid generated to give to the user once they pass 2-fac auth
+to authenticate into other endpoints
 */
 async function handleLogin(req, res) {
   const { idToken } = req.body;
@@ -121,8 +171,10 @@ async function handle2FactorAuthentication(req, res) {
   if (!sessionId || !code) {
     return res.status(400).send({ error: "Invalid request" });
   }
-  db.collection("2_fac").doc(email).get()
-    .then(firebase_res => {
+  db.collection("2_fac")
+    .doc(email)
+    .get()
+    .then((firebase_res) => {
       const twoFacEntry = firebase_res.data();
       if (sessionId == twoFacEntry.sessionId && code === twoFacEntry.code) {
         return res.status(200).send({ token: twoFacEntry.token });
@@ -134,4 +186,4 @@ async function handle2FactorAuthentication(req, res) {
     });
 }
 
-module.exports = { getAuthRoutes };
+module.exports = { authMiddleware, getAuthRoutes };
