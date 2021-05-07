@@ -5,9 +5,16 @@ const client = require("../twilio-init.js");
 const db = firebase.firestore();
 require("dotenv").config();
 
+/*
+-- Request Headers --
+login_token: generated on client-side via firebase.auth().currentUser.getIdToken(true)
+two_fac_token: received from this server after passing 2-fac
+
+Parse the login token via Firebase Admin API. Get the email. Get the two-fac token
+associated with this email in 2fac db. Check that this two-fac token matches the
+two-fac token received in the headers. If all's well, user checks out.
+*/
 function authMiddleware(req, res, next) {
-  // check user is logged into firebase via token
-  // and that said user has the right 2-fac auth token
   const [loginToken, twoFacToken] = [
     req.headers.login_token,
     req.headers.two_fac_token,
@@ -84,10 +91,13 @@ from the frontend by doing firebase.auth().currentUser.getIdToken(true).
 -- Response --
 sessionId or error
 
-Check if session matches existing two-factor authentication session and that
-the user entered code matches the code from this login session. If we pass
-these checks then return the user the token they can use to make requests
-to other endpoints.
+Check if firebase id token is valid through firebase admin API. If so,
+establish a new 2-fac session by creating a new document in 2_fac with
+- sessionId: uuid generated for the server and the user to keep
+track of this transaction
+- code: the 4-digit code the user should enter
+- token: uuid generated to give to the user once they pass 2-fac auth
+to authenticate into other endpoints
 */
 async function handleLogin(req, res) {
   const { idToken } = req.body;
