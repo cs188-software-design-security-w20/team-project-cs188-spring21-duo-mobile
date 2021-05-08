@@ -4,6 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const { getRoutes } = require('./routes/index.js');
+const { rateLimiterMiddleware } = require('./rate-limiter');
 
 function handleTerminate(server) {
   async function exitHandler(options = {}) {
@@ -30,7 +31,7 @@ function startServer({ port = process.env.PORT } = {}) {
   const app = express();
   app.use(cors());
   app.use(bodyParser.json());
-  app.use('/api', getRoutes());
+  app.use('/api', rateLimiterMiddleware, getRoutes());
   app.get('/test', (req, res) => {
     res.send('test');
   });
