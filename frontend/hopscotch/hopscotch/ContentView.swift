@@ -8,14 +8,29 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var auth: AuthStore
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        Group {
+            if (auth.session != nil) {
+                VStack {
+                    Text("Hello user!")
+                    Button(action: { _ = auth.signOut() }) {
+                        Text("Sign Out")
+                    }
+                }
+            
+            } else {
+                AuthView()
+            }
+        }.onAppear {
+            auth.listen()
+        }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView().environmentObject(AuthStore())
     }
 }
