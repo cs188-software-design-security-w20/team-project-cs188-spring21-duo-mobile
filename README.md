@@ -34,4 +34,10 @@ yarn install
 yarn start
 ```
 
+### Linting
+Using eslint-airbnb
+```
+yarn lint
+```
+
 Insert your own API keys or contact @michaelw54 for values used in production.
