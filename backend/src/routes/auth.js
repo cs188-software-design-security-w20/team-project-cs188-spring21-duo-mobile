@@ -34,7 +34,7 @@ async function authMiddleware(req, res, next) {
       .get();
     const twoFacEntry = firebaseRes.data();
     if (twoFacToken === twoFacEntry.token) {
-      next();
+      return next();
     }
     return res.status(401).send({ error: 'Unauthorized' });
   } catch (_) {
