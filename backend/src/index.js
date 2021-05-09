@@ -4,9 +4,12 @@ const cors = require('cors');
 require('dotenv').config();
 
 const { getRoutes } = require('./routes/index.js');
+const { rateLimiterMiddleware } = require('./rate-limiter');
+const redisClient = require('./redis-client');
 
 function handleTerminate(server) {
   async function exitHandler(options = {}) {
+    redisClient.quit();
     await server
       .close()
       .then(() => {
@@ -30,7 +33,7 @@ function startServer({ port = process.env.PORT } = {}) {
   const app = express();
   app.use(cors());
   app.use(bodyParser.json());
-  app.use('/api', getRoutes());
+  app.use('/api', rateLimiterMiddleware, getRoutes());
   app.get('/test', (req, res) => {
     res.send('test');
   });
