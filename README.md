@@ -30,7 +30,9 @@ TWILIO_REGISTERED_NUMBER=...
 
 ### Running the server
 ```
+brew install redis # Make sure redis is installed
 yarn install
+redis-server & # Start redis server in the background
 yarn start
 ```
 

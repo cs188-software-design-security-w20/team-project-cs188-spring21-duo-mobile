@@ -25,6 +25,8 @@ const rateLimiterMiddleware = (req, res, next) => {
               cnt: 1,
             },
           ]),
+          'EX',
+          RATE_LIMIT_WINDOW_HOURS * 60 * 60,
         );
         return next();
       }
@@ -38,8 +40,8 @@ const rateLimiterMiddleware = (req, res, next) => {
         }
         return false;
       });
-      if (requestCountInWindow > REQUEST_LIMIT_COUNT) {
-        redisClient.set(req.ip, JSON.stringify(newData));
+      if (requestCountInWindow >= REQUEST_LIMIT_COUNT) {
+        redisClient.set(req.ip, JSON.stringify(newData), 'EX', RATE_LIMIT_WINDOW_HOURS * 60 * 60);
         return res.status(429).send({ error: 'Rate limit exceeded' });
       }
       const logGroupStartTime = currTime
@@ -53,7 +55,7 @@ const rateLimiterMiddleware = (req, res, next) => {
       } else {
         newData.push({ ts: currTime.unix(), cnt: 1 });
       }
-      redisClient.set(req.ip, JSON.stringify(newData));
+      redisClient.set(req.ip, JSON.stringify(newData), 'EX', RATE_LIMIT_WINDOW_HOURS * 60 * 60);
       return next();
     });
   } catch (error) {
