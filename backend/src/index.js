@@ -5,9 +5,11 @@ require('dotenv').config();
 
 const { getRoutes } = require('./routes/index.js');
 const { rateLimiterMiddleware } = require('./rate-limiter');
+const redisClient = require('./redis-client');
 
 function handleTerminate(server) {
   async function exitHandler(options = {}) {
+    redisClient.quit();
     await server
       .close()
       .then(() => {
