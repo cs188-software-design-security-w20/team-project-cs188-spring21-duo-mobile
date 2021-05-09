@@ -50,7 +50,7 @@ async function handleLink(req, res) {
     Spotify.setRedirectURI(`${req.query.redirectHost}/api/spotify/oauth-callback`);
   }
   const authorizeURL = Spotify.createAuthorizeURL(SPOTIFY_SCOPES, state.toString());
-  res.json({ authorizeURL });
+  return res.json({ authorizeURL });
 }
 
 /*
@@ -78,7 +78,7 @@ async function handleOauthCallback(req, res) {
       return email;
     });
 
-    Spotify.authorizationCodeGrant(code, (error, data) => {
+    await Spotify.authorizationCodeGrant(code, (error, data) => {
       if (error) {
         throw error;
       }
@@ -91,11 +91,10 @@ async function handleOauthCallback(req, res) {
       db.collection('user_metadata').doc(userEmail).update({
         spotify_refresh_token: refreshToken,
       });
-
-      res.status(200).json({ success: true });
     });
+    return res.status(200).json({ success: true });
   } catch (e) {
-    res.status(500).json({ error: e });
+    return res.status(500).json({ error: e });
   }
 }
 
@@ -119,9 +118,9 @@ async function handleCurrentlyPlaying(req, res) {
       }
     });
     const song = await Spotify.getMyCurrentPlayingTrack().then((data) => data.body.item);
-    res.status(200).json({ song });
+    return res.status(200).json({ song });
   } catch (e) {
-    res.status(500).json({ error: `Something went wrong while fetching the data: ${e}` });
+    return res.status(500).json({ error: `Something went wrong while fetching the data: ${e}` });
   }
 }
 
@@ -138,9 +137,9 @@ async function spotifyTokenMiddleware(req, res, next) {
     if (!req.user_spotify_refresh_token) {
       throw new Error('No spotify token found.');
     }
-    next();
+    return next();
   } catch (e) {
-    res.status(400).json({ message: "You don't seem to have linked your account with spotify yet." });
+    return res.status(400).json({ message: "You don't seem to have linked your account with spotify yet." });
   }
 }
 
