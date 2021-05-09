@@ -15,32 +15,34 @@ two_fac_token: received from this server after passing 2-fac
 
 Parse the login token via Firebase Admin API. Get the email. Get the two-fac token
 associated with this email in 2fac db. Check that this two-fac token matches the
-two-fac token received in the headers. If all's well, user checks out.
+two-fac token received in the headers. If all's well, user checks out, and we set the
+request.user_email property so downstream handlers know who is making the request.
 */
 async function authMiddleware(req, res, next) {
-  const [loginToken, twoFacToken] = [
-    req.headers.login_token,
-    req.headers.two_fac_token,
-  ];
+    const [loginToken, twoFacToken] = [
+        req.headers.login_token,
+        req.headers.two_fac_token,
+    ];
 
-  if (loginToken == null || twoFacToken == null) {
-    console.log('auth tokens not found');
-    return res.status(401).send({ error: 'Unauthorized' });
-  }
-  try {
-    const decodedToken = await admin.auth().verifyIdToken(loginToken);
-    const firebaseRes = await db.collection('2_fac')
-      .doc(decodedToken.email)
-      .get();
-    const twoFacEntry = firebaseRes.data();
-    if (twoFacToken === twoFacEntry.token) {
-      return next();
+    if (loginToken == null || twoFacToken == null) {
+        console.log('auth tokens not found');
+        return res.status(401).send({ error: 'Unauthorized' });
     }
-    return res.status(401).send({ error: 'Unauthorized' });
-  } catch (_) {
-    console.log("couldn't get a 2fac entry");
-    return res.status(401).send({ error: 'Unauthorized' });
-  }
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(loginToken);
+        const firebaseRes = await db.collection('2_fac')
+            .doc(decodedToken.email)
+            .get();
+        const twoFacEntry = firebaseRes.data();
+        if (twoFacToken === twoFacEntry.token) {
+            req.user_email = decodedToken.email;
+            return next();
+        }
+        return res.status(401).send({ error: 'Unauthorized' });
+    } catch (_) {
+        console.log("couldn't get a 2fac entry");
+        return res.status(401).send({ error: 'Unauthorized' });
+    }
 }
 
 /*
@@ -55,15 +57,15 @@ a POST request hits this endpoint to create the corresponding user metadata
 document in Firestore.
 */
 async function handleRegister(req, res) {
-  const { email, password, phone } = req.body;
-  if (!email || !password || !phone) {
-    return res.status(400).send({ error: 'Insufficient info' });
-  }
-  db.collection('user_metadata').doc(email).set({
-    phone,
-    spotify_refresh_token: null,
-  });
-  return res.status(200).send();
+    const { email, password, phone } = req.body;
+    if (!email || !password || !phone) {
+        return res.status(400).send({ error: 'Insufficient info' });
+    }
+    db.collection('user_metadata').doc(email).set({
+        phone,
+        spotify_refresh_token: null,
+    });
+    return res.status(200).send();
 }
 
 /*
@@ -83,54 +85,54 @@ track of this transaction
 to authenticate into other endpoints
 */
 async function handleLogin(req, res) {
-  const { idToken } = req.body;
-  if (!idToken) {
-    return res.status(400).send({ error: 'Missing token' });
-  }
-  try {
-    const decodedToken = await admin
-      .auth()
-      .verifyIdToken(idToken);
-    console.log(decodedToken);
-    const { email } = decodedToken;
-    if (!email) {
-      return res.status(400).send({ error: 'Invalid token' });
+    const { idToken } = req.body;
+    if (!idToken) {
+        return res.status(400).send({ error: 'Missing token' });
     }
-    const sessionId = uuid();
-    /* generate code between 1000 and 9999 and stringify */
-    const code = (
-      Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000
-    ).toString();
-      /* this is the token the user will need to present in order to be fully authenticated
-       * we will only hand over this token to client side when 2-factor authentication is complete
-       */
-    const token = uuid();
-    db.collection('2_fac').doc(email).set({
-      sessionId,
-      code,
-      token,
-    });
-
-    const firebaseRes = await db.collection('user_metadata')
-      .doc(email)
-      .get();
-    const userMetadata = firebaseRes.data();
     try {
-      const message = await client.messages
-        .create({
-          to: userMetadata.phone,
-          from: process.env.TWILIO_REGISTERED_NUMBER,
-          body: `Your hopscotch login code: ${code}`,
+        const decodedToken = await admin
+            .auth()
+            .verifyIdToken(idToken);
+        console.log(decodedToken);
+        const { email } = decodedToken;
+        if (!email) {
+            return res.status(400).send({ error: 'Invalid token' });
+        }
+        const sessionId = uuid();
+        /* generate code between 1000 and 9999 and stringify */
+        const code = (
+            Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000
+        ).toString();
+        /* this is the token the user will need to present in order to be fully authenticated
+         * we will only hand over this token to client side when 2-factor authentication is complete
+         */
+        const token = uuid();
+        db.collection('2_fac').doc(email).set({
+            sessionId,
+            code,
+            token,
         });
-      console.log(message.sid);
-      return res.status(200).send({ sessionId });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send({ error });
+
+        const firebaseRes = await db.collection('user_metadata')
+            .doc(email)
+            .get();
+        const userMetadata = firebaseRes.data();
+        try {
+            const message = await client.messages
+                .create({
+                    to: userMetadata.phone,
+                    from: process.env.TWILIO_REGISTERED_NUMBER,
+                    body: `Your hopscotch login code: ${code}`,
+                });
+            console.log(message.sid);
+            return res.status(200).send({ sessionId });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({ error });
+        }
+    } catch (_) {
+        return res.status(400).send({ error: 'Invalid token' });
     }
-  } catch (_) {
-    return res.status(400).send({ error: 'Invalid token' });
-  }
 }
 
 /*
@@ -146,29 +148,29 @@ these checks then return the user the token they can use to make requests
 to other endpoints.
 */
 async function handle2FactorAuthentication(req, res) {
-  const { email, sessionId, code } = req.body;
-  if (!sessionId || !code) {
-    return res.status(400).send({ error: 'Invalid request' });
-  }
-  try {
-    const firebaseRes = await db.collection('2_fac')
-      .doc(email)
-      .get();
-    const twoFacEntry = firebaseRes.data();
-    if (sessionId === twoFacEntry.sessionId && code === twoFacEntry.code) {
-      return res.status(200).send({ token: twoFacEntry.token });
+    const { email, sessionId, code } = req.body;
+    if (!sessionId || !code) {
+        return res.status(400).send({ error: 'Invalid request' });
     }
-    return res.status(401).send({ error: 'Incorrect code' });
-  } catch (_) {
-    return res.status(401).send({ error: 'No session found' });
-  }
+    try {
+        const firebaseRes = await db.collection('2_fac')
+            .doc(email)
+            .get();
+        const twoFacEntry = firebaseRes.data();
+        if (sessionId === twoFacEntry.sessionId && code === twoFacEntry.code) {
+            return res.status(200).send({ token: twoFacEntry.token });
+        }
+        return res.status(401).send({ error: 'Incorrect code' });
+    } catch (_) {
+        return res.status(401).send({ error: 'No session found' });
+    }
 }
 
 function getAuthRoutes() {
-  const router = express.Router();
-  router.post('/register', handleRegister);
-  router.post('/login', handleLogin);
-  router.post('/2fac', handle2FactorAuthentication);
-  return router;
+    const router = express.Router();
+    router.post('/register', handleRegister);
+    router.post('/login', handleLogin);
+    router.post('/2fac', handle2FactorAuthentication);
+    return router;
 }
 module.exports = { authMiddleware, getAuthRoutes };
