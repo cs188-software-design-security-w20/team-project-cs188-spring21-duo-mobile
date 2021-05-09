@@ -40,7 +40,6 @@ function App() {
   const [loginToken, setLoginToken] = useState(localStorage.getItem('loginToken'));
 
   const [songs, setSongs] = useState("");
-  const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
 
   useEffect(() => {
     if (twoFacToken && loginToken) {
@@ -140,38 +139,8 @@ function App() {
               }
             });
         }}>get songs</button>
-        <button onClick={() => {
-          // eslint-disable-next-line no-restricted-globals
-          axios.get(`http://localhost:5000/api/spotify/link?redirectHost=${encodeURIComponent("http://localhost:5000")}`, {
-            headers: {
-              login_token: loginToken,
-              two_fac_token: twoFacToken
-            }
-          })
-            .then((res) => {
-              if (res.status === 200) {
-                window.open(res.data.authorizeURL, '_blank');
-              }
-            });
-        }}>link spotify</button>
-        <button onClick={() => {
-          // eslint-disable-next-line no-restricted-globals
-          axios.get(`http://localhost:5000/api/spotify/currently-playing`, {
-            headers: {
-              login_token: loginToken,
-              two_fac_token: twoFacToken
-            }
-          })
-            .then((res) => {
-              if (res.status === 200) {
-                setCurrentlyPlaying(res.data.song);
-              }
-            });
-        }}>get currently playing</button>
-
         <button onClick={() => setPhone("")}>refresh phone #</button>
         <div>{JSON.stringify(songs)}</div>
-        <div>Currently Playing: {(!currentlyPlaying) ? "nothing atm" : `${currentlyPlaying.name} by ${currentlyPlaying.artists.map((artist) => artist.name).join(", ")}`}</div>
       </div>
     </div>;
   };
