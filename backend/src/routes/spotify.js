@@ -41,7 +41,10 @@ your Hopscotch account.
 async function handleLink(req, res) {
   const state = crypto.randomBytes(20).toString('hex');
   // Store the state in a document for lookup later, store the corresponding user's email
-  await db.collection('spotify_state').doc(state.toString()).set({ email: req.user_email, createdAt: '' });
+  await db.collection('spotify_state').doc(state.toString()).set({
+    email: req.user_email,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
 
   if (req.query.redirectHost) {
     Spotify.setRedirectURI(`${req.query.redirectHost}/api/spotify/oauth-callback`);
