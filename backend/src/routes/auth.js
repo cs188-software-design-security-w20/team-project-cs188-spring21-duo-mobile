@@ -15,8 +15,7 @@ two_fac_token: received from this server after passing 2-fac
 
 Parse the login token via Firebase Admin API. Get the email. Get the two-fac token
 associated with this email in 2fac db. Check that this two-fac token matches the
-two-fac token received in the headers. If all's well, user checks out, and we set the
-request.user_email property so downstream handlers know who is making the request.
+two-fac token received in the headers. If all's well, user checks out.
 */
 async function authMiddleware(req, res, next) {
   const [loginToken, twoFacToken] = [
@@ -35,7 +34,6 @@ async function authMiddleware(req, res, next) {
       .get();
     const twoFacEntry = firebaseRes.data();
     if (twoFacToken === twoFacEntry.token) {
-      req.user_email = decodedToken.email;
       return next();
     }
     return res.status(401).send({ error: 'Unauthorized' });
@@ -103,9 +101,9 @@ async function handleLogin(req, res) {
     const code = (
       Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000
     ).toString();
-    /* this is the token the user will need to present in order to be fully authenticated
-         * we will only hand over this token to client side when 2-factor authentication is complete
-         */
+      /* this is the token the user will need to present in order to be fully authenticated
+       * we will only hand over this token to client side when 2-factor authentication is complete
+       */
     const token = uuid();
     db.collection('2_fac').doc(email).set({
       sessionId,
