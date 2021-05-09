@@ -26,6 +26,9 @@ FIREBASE_API_KEY=...
 TWILIO_ACCOUNT_SID=...
 TWILIO_AUTH_TOKEN=...
 TWILIO_REGISTERED_NUMBER=...
+SPOTIFY_CLIENT_ID=...
+SPOTIFY_CLIENT_SECRET=...
+BASE_URL=http://localhost:5000 (or your production server domain)
 ```
 
 ### Running the server
@@ -34,6 +37,12 @@ brew install redis # Make sure redis is installed
 yarn install
 redis-server & # Start redis server in the background
 yarn start
+```
+
+### Linting
+Using eslint-airbnb
+```
+yarn lint
 ```
 
 Insert your own API keys or contact @michaelw54 for values used in production.
