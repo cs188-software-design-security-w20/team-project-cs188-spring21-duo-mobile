@@ -10,7 +10,7 @@ require('dotenv').config();
 const Spotify = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  redirectUri: 'https://hopscotch-backend.herokuapp.com/api/spotify/oauth-callback',
+  redirectUri: `${process.env.BASE_URL}/api/spotify/oauth-callback`,
 });
 
 // Scopes to request.
@@ -46,9 +46,6 @@ async function handleLink(req, res) {
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
 
-  if (req.query.redirectHost) {
-    Spotify.setRedirectURI(`${req.query.redirectHost}/api/spotify/oauth-callback`);
-  }
   const authorizeURL = Spotify.createAuthorizeURL(SPOTIFY_SCOPES, state.toString());
   return res.json({ authorizeURL });
 }
