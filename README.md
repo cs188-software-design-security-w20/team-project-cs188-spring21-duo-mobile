@@ -1,25 +1,39 @@
 # Hopscotch
 
 ## Frontend
-@max please add some detailed instructions for setting up env and launching + steps for deployment etc.
+
+### Add config/cert files
+
+Add the following files to `frontend/hopscotch/hopscotch/`:
+
+- `GoogleService-info.plist`: Downloaded from Firebase project
+- `Config.plist`: Configuring projects
+  - Key-value pairs:
+    - `API_URL`: Backend API URL. For example, "http://localhost:5000/" for dev/
 
 ### Authentication web demo
+
 This is primarily used for manual end-to-end testing of the authentication flow. Make sure that this demo runs smoothly after any changes to the auth API. This will not be deployed.
+
 ## Create a .env file in `frontend/web-2-fac-auth-demo`
+
 ```
 REACT_APP_DEMO_FIREBASE_API_KEY=...
 ```
 
 ### Running the web app
+
 ```
 yarn install
 yarn start
 ```
+
 ## Backend
 
-Within the backend directory 
+Within the backend directory
 
 ### Create a .env file in `backend`
+
 ```
 PORT=5000
 FIREBASE_API_KEY=...
@@ -40,9 +54,11 @@ GOOGLE_CREDENTIALS_TOKEN_URI=...
 GOOGLE_CREDENTIALS_AUTH_PROVIDER_X509_CERT_URL=...
 GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL=...
 ```
+
 The values for the environment variables prefixed with GOOGLE_CREDENTIALS can be downloaded from firebase console.
 
 ### Running the server
+
 ```
 brew install redis # Make sure redis is installed
 yarn install
@@ -51,7 +67,9 @@ yarn start
 ```
 
 ### Linting
+
 Using eslint-airbnb
+
 ```
 yarn lint
 ```
