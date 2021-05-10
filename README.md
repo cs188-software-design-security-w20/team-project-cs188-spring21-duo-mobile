@@ -60,6 +60,12 @@ docker-compose up --build
 See [this heroku article](https://devcenter.heroku.com/articles/local-development-with-docker-compose) about developing locally with docker compose
 and then deplying to heroku.
 
+Authenticate to Heroku
+```
+heroku login
+heroku container:login
+```
+
 Once you have tested locally via `docker-compose up`, push and release changes to heroku by doing:
 ```
 heroku container:push web -a hopscotch-backend
