@@ -23,6 +23,8 @@ const auth_states = {
   AUTHENTICATED: "authenticated",
 };
 
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 function App() {
   const [authState, setAuthState] = useState(auth_states.UNAUTHENTICATED);
 
@@ -53,7 +55,7 @@ function App() {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(async (_) => {
-        await axios.post("http://localhost:5000/api/auth/register", {
+        await axios.post(`${BASE_URL}/api/auth/register`, {
           email,
           password,
           phone,
@@ -63,7 +65,7 @@ function App() {
       .then((idToken) => {
         setLoginToken(idToken);
         localStorage.setItem('loginToken', idToken);
-        return axios.post("http://localhost:5000/api/auth/login", {
+        return axios.post(`${BASE_URL}/api/auth/login`, {
           idToken,
         });
       })
@@ -88,7 +90,7 @@ function App() {
       .then((idToken) => {
         setLoginToken(idToken);
         localStorage.setItem('loginToken', idToken);
-        return axios.post("http://localhost:5000/api/auth/login", {
+        return axios.post(`${BASE_URL}/api/auth/login`, {
           idToken,
         });
       })
@@ -106,7 +108,7 @@ function App() {
   function twofactor() {
     console.log(sessionId, code);
     axios
-      .post("http://localhost:5000/api/auth/2fac", {
+      .post(`${BASE_URL}/api/auth/2fac`, {
         email,
         sessionId,
         code,
@@ -128,7 +130,7 @@ function App() {
     return <div>Welcome!
       <div>
         <button onClick={() => {
-          axios.get("http://localhost:5000/api/songs/nearby?lat=34.06892&lng=-118.445183", {
+          axios.get(`${BASE_URL}/api/songs/nearby?lat=34.06892&lng=-118.445183`, {
             headers: {
               login_token: loginToken,
               two_fac_token: twoFacToken
@@ -142,7 +144,7 @@ function App() {
         }}>get songs</button>
         <button onClick={() => {
           // eslint-disable-next-line no-restricted-globals
-          axios.get(`http://localhost:5000/api/spotify/link?redirectHost=${encodeURIComponent("http://localhost:5000")}`, {
+          axios.get(`${BASE_URL}/api/spotify/link?redirectHost=${encodeURIComponent(BASE_URL)}`, {
             headers: {
               login_token: loginToken,
               two_fac_token: twoFacToken
@@ -156,7 +158,7 @@ function App() {
         }}>link spotify</button>
         <button onClick={() => {
           // eslint-disable-next-line no-restricted-globals
-          axios.get(`http://localhost:5000/api/spotify/currently-playing`, {
+          axios.get(`${BASE_URL}/api/spotify/currently-playing`, {
             headers: {
               login_token: loginToken,
               two_fac_token: twoFacToken
