@@ -12,9 +12,15 @@
 		1A61467F2648B09B009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */; };
 		1A6146802648B09B009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */; };
 		1A6146812648B09B009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */; };
+		1A61468D2648B8B6009B5D46 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61468C2648B8B6009B5D46 /* Config.plist */; };
+		1A61468E2648B8B6009B5D46 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61468C2648B8B6009B5D46 /* Config.plist */; };
+		1A61468F2648B8B6009B5D46 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61468C2648B8B6009B5D46 /* Config.plist */; };
+		1A6146982648B925009B5D46 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6146972648B925009B5D46 /* Config.swift */; };
+		1A6146992648B925009B5D46 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6146972648B925009B5D46 /* Config.swift */; };
+		1A61469A2648B925009B5D46 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6146972648B925009B5D46 /* Config.swift */; };
+		1A6146CA2648C051009B5D46 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6146C92648C051009B5D46 /* ContentView.swift */; };
 		1A8525EA9AC8E3FA1CB0CE02 /* Pods_hopscotch_hopscotchUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D37BC2FCE1F40C7DEE0C075 /* Pods_hopscotch_hopscotchUITests.framework */; };
 		1AE1DD9426460F8400BFA954 /* HopscotchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE1DD9326460F8400BFA954 /* HopscotchApp.swift */; };
-		1AE1DD9626460F8400BFA954 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE1DD9526460F8400BFA954 /* ContentView.swift */; };
 		1AE1DD9826460F8600BFA954 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AE1DD9726460F8600BFA954 /* Assets.xcassets */; };
 		1AE1DD9B26460F8600BFA954 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AE1DD9A26460F8600BFA954 /* Preview Assets.xcassets */; };
 		1AE1DDA626460F8600BFA954 /* hopscotchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE1DDA526460F8600BFA954 /* hopscotchTests.swift */; };
@@ -44,9 +50,11 @@
 		1A61462F26468BBC009B5D46 /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
 		1A614638264690B9009B5D46 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1A61468C2648B8B6009B5D46 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
+		1A6146972648B925009B5D46 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		1A6146C92648C051009B5D46 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1AE1DD9026460F8300BFA954 /* hopscotch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hopscotch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE1DD9326460F8400BFA954 /* HopscotchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HopscotchApp.swift; sourceTree = "<group>"; };
-		1AE1DD9526460F8400BFA954 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1AE1DD9726460F8600BFA954 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1AE1DD9A26460F8600BFA954 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		1AE1DD9C26460F8600BFA954 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -114,6 +122,21 @@
 			path = Auth;
 			sourceTree = "<group>";
 		};
+		1A6146962648B905009B5D46 /* Backend */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Backend;
+			sourceTree = "<group>";
+		};
+		1A6146A12648BA0C009B5D46 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				1A6146972648B925009B5D46 /* Config.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		1AE1DD8726460F8300BFA954 = {
 			isa = PBXGroup;
 			children = (
@@ -139,11 +162,14 @@
 		1AE1DD9226460F8300BFA954 /* hopscotch */ = {
 			isa = PBXGroup;
 			children = (
+				1A6146A12648BA0C009B5D46 /* Utils */,
+				1A6146962648B905009B5D46 /* Backend */,
 				1A61462B26468B92009B5D46 /* Auth */,
 				1AE1DD9326460F8400BFA954 /* HopscotchApp.swift */,
-				1AE1DD9526460F8400BFA954 /* ContentView.swift */,
 				1AE1DD9726460F8600BFA954 /* Assets.xcassets */,
 				1AE1DD9C26460F8600BFA954 /* Info.plist */,
+				1A6146C92648C051009B5D46 /* ContentView.swift */,
+				1A61468C2648B8B6009B5D46 /* Config.plist */,
 				1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */,
 				1AE1DD9926460F8600BFA954 /* Preview Content */,
 			);
@@ -297,6 +323,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A61468D2648B8B6009B5D46 /* Config.plist in Resources */,
 				1A61467F2648B09B009B5D46 /* GoogleService-Info.plist in Resources */,
 				1AE1DD9B26460F8600BFA954 /* Preview Assets.xcassets in Resources */,
 				1AE1DD9826460F8600BFA954 /* Assets.xcassets in Resources */,
@@ -307,6 +334,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A61468E2648B8B6009B5D46 /* Config.plist in Resources */,
 				1A6146802648B09B009B5D46 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,6 +343,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A61468F2648B8B6009B5D46 /* Config.plist in Resources */,
 				1A6146812648B09B009B5D46 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -429,7 +458,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1AE1DD9626460F8400BFA954 /* ContentView.swift in Sources */,
+				1A6146982648B925009B5D46 /* Config.swift in Sources */,
+				1A6146CA2648C051009B5D46 /* ContentView.swift in Sources */,
 				1A61463026468BBC009B5D46 /* AuthStore.swift in Sources */,
 				1A614639264690B9009B5D46 /* AuthView.swift in Sources */,
 				1AE1DD9426460F8400BFA954 /* HopscotchApp.swift in Sources */,
@@ -441,6 +471,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AE1DDA626460F8600BFA954 /* hopscotchTests.swift in Sources */,
+				1A6146992648B925009B5D46 /* Config.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,6 +480,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AE1DDB126460F8600BFA954 /* hopscotchUITests.swift in Sources */,
+				1A61469A2648B925009B5D46 /* Config.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
