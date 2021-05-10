@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1A614606264688C7009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A614605264688C7009B5D46 /* GoogleService-Info.plist */; };
-		1A614607264688C7009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A614605264688C7009B5D46 /* GoogleService-Info.plist */; };
-		1A614608264688C7009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A614605264688C7009B5D46 /* GoogleService-Info.plist */; };
 		1A61463026468BBC009B5D46 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A61462F26468BBC009B5D46 /* AuthStore.swift */; };
 		1A614639264690B9009B5D46 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A614638264690B9009B5D46 /* AuthView.swift */; };
+		1A61467F2648B09B009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */; };
+		1A6146802648B09B009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */; };
+		1A6146812648B09B009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */; };
 		1A8525EA9AC8E3FA1CB0CE02 /* Pods_hopscotch_hopscotchUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D37BC2FCE1F40C7DEE0C075 /* Pods_hopscotch_hopscotchUITests.framework */; };
 		1AE1DD9426460F8400BFA954 /* HopscotchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE1DD9326460F8400BFA954 /* HopscotchApp.swift */; };
 		1AE1DD9626460F8400BFA954 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE1DD9526460F8400BFA954 /* ContentView.swift */; };
@@ -41,9 +41,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1A614605264688C7009B5D46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1A61462F26468BBC009B5D46 /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
 		1A614638264690B9009B5D46 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1AE1DD9026460F8300BFA954 /* hopscotch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hopscotch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE1DD9326460F8400BFA954 /* HopscotchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HopscotchApp.swift; sourceTree = "<group>"; };
 		1AE1DD9526460F8400BFA954 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 				1AE1DD9526460F8400BFA954 /* ContentView.swift */,
 				1AE1DD9726460F8600BFA954 /* Assets.xcassets */,
 				1AE1DD9C26460F8600BFA954 /* Info.plist */,
-				1A614605264688C7009B5D46 /* GoogleService-Info.plist */,
+				1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */,
 				1AE1DD9926460F8600BFA954 /* Preview Content */,
 			);
 			path = hopscotch;
@@ -297,9 +297,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A61467F2648B09B009B5D46 /* GoogleService-Info.plist in Resources */,
 				1AE1DD9B26460F8600BFA954 /* Preview Assets.xcassets in Resources */,
 				1AE1DD9826460F8600BFA954 /* Assets.xcassets in Resources */,
-				1A614606264688C7009B5D46 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,7 +307,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A614607264688C7009B5D46 /* GoogleService-Info.plist in Resources */,
+				1A6146802648B09B009B5D46 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,7 +315,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A614608264688C7009B5D46 /* GoogleService-Info.plist in Resources */,
+				1A6146812648B09B009B5D46 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
