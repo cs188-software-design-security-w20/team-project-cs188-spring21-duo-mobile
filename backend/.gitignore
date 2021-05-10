@@ -5,3 +5,4 @@ google-credentials.json
 .DS_Store
 yarn.lock
 *.log
+hopscotch-vol
