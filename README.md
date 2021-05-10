@@ -21,7 +21,6 @@ Within the backend directory
 
 ### Create a .env file in `backend`
 ```
-PORT=5000
 FIREBASE_API_KEY=...
 TWILIO_ACCOUNT_SID=...
 TWILIO_AUTH_TOKEN=...
@@ -42,12 +41,28 @@ GOOGLE_CREDENTIALS_CLIENT_X509_CERT_URL=...
 ```
 The values for the environment variables prefixed with GOOGLE_CREDENTIALS can be downloaded from firebase console.
 
-### Running the server
+### Running the server locally
 ```
 brew install redis # Make sure redis is installed
 yarn install
 redis-server & # Start redis server in the background
 yarn start
+```
+
+### Running the server via docker compose
+From the backend directory:
+```
+docker-compose up --build
+```
+
+### **Deploying container to Heroku**
+See [this heroku article](https://devcenter.heroku.com/articles/local-development-with-docker-compose) about developing locally with docker compose
+and then deplying to heroku.
+
+Once you have tested locally via `docker-compose up`, push and release changes to heroku by doing:
+```
+heroku container:push web -a hopscotch-backend
+heroku container:release web -a hopscotch-backend
 ```
 
 ### Linting
