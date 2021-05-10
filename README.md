@@ -8,6 +8,7 @@ This is primarily used for manual end-to-end testing of the authentication flow.
 ## Create a .env file in `frontend/web-2-fac-auth-demo`
 ```
 REACT_APP_DEMO_FIREBASE_API_KEY=...
+REACT_APP_API_BASE_URL=http://localhost:5000 or https://hopscotch-backend.herokuapp.com depending on if you're testing locally or with deployed server
 ```
 
 ### Running the web app
@@ -58,6 +59,12 @@ docker-compose up --build
 ### **Deploying container to Heroku**
 See [this heroku article](https://devcenter.heroku.com/articles/local-development-with-docker-compose) about developing locally with docker compose
 and then deplying to heroku.
+
+Authenticate to Heroku
+```
+heroku login
+heroku container:login
+```
 
 Once you have tested locally via `docker-compose up`, push and release changes to heroku by doing:
 ```
