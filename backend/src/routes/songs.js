@@ -1,21 +1,40 @@
 const express = require('express');
 const geofire = require('geofire-common');
+const moment = require('moment');
 const { firebase } = require('../firebase-init.js');
 
 const db = firebase.firestore();
 
 async function handleSong(req, res) {
   const { lat, lng, songId } = req.body;
+  const currTime = moment().unix();
   if (!lat || !lng || !songId) {
     return res.status(400).send('Insufficient info');
   }
+
   // TODO: Add data validation
   const result = await db.collection('songEntries').add({
     songId,
     locationHash: geofire.geohashForLocation([lat, lng]),
     lat,
     lng,
+    ts: currTime,
   });
+
+  const userRef = db.collection('user_metadata').doc(req.user_email);
+  try {
+    await db.runTransaction(async (t) => {
+      const doc = await t.get(userRef);
+      if (!doc.exists) {
+        return res.status(404).send('User not found');
+      }
+      const newSongs = doc.data().song_entries;
+      newSongs.push(result.id);
+      return t.update(userRef, { song_entries: newSongs });
+    });
+  } catch (e) {
+    return res.status(500).send('Unexpected issue');
+  }
   return res.status(200).send(result.id);
 }
 

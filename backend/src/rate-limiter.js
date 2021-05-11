@@ -1,8 +1,8 @@
 const moment = require('moment');
 const redisClient = require('./redis-client');
 
-const RATE_LIMIT_WINDOW_HOURS = 24; // Window duration for which rate limiting should apply
-const REQUEST_LIMIT_COUNT = 20; // Max number of requests per window
+const RATE_LIMIT_WINDOW_HOURS = 2; // Window duration for which rate limiting should apply
+const REQUEST_LIMIT_COUNT = 50; // Max number of requests per window
 const LOG_GROUP_WINDOW_HOURS = 1; // Rate limit window bucket duration
 
 // Sliding window counter based rate limiting middleware
