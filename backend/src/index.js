@@ -26,7 +26,11 @@ function handleTerminate(server) {
   process.on("SIGINT", exitHandler.bind(null, { exit: true }));
   process.on("SIGUSR1", exitHandler.bind(null, { exit: true }));
   process.on("SIGUSR2", exitHandler.bind(null, { exit: true }));
-  process.on("uncaughtException", exitHandler.bind(null, { exit: true }));
+  process.on("uncaughtException", (error) => {
+    // eslint-disable-next-line no-console
+    console.log("Uncaught exception: ", error);
+    exitHandler({ exit: true });
+  });
 }
 
 function debug(req, res, next) {
@@ -37,7 +41,7 @@ function debug(req, res, next) {
   return next();
 }
 
-function startServer({ port = process.env.PORT } = {}) {
+function startServer({ port = process.env.PORT || 5000 } = {}) {
   const app = express();
   app.use(cors());
   app.use(bodyParser.json());
