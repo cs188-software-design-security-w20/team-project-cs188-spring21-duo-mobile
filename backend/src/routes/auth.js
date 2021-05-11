@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 
-const express = require('express');
-const { uuid } = require('uuidv4');
-const { firebase, admin } = require('../firebase-init.js');
-const client = require('../twilio-init.js');
+const express = require("express");
+const { uuid } = require("uuidv4");
+const { firebase, admin } = require("../firebase-init.js");
+const client = require("../twilio-init.js");
 
 const db = firebase.firestore();
-require('dotenv').config();
+require("dotenv").config();
 
 /*
 -- Request Headers --
@@ -18,30 +18,44 @@ associated with this email in 2fac db. Check that this two-fac token matches the
 two-fac token received in the headers. If all's well, user checks out, and we set the
 request.user_email property so downstream handlers know who is making the request.
 */
-async function authMiddleware(req, res, next) {
-  const [loginToken, twoFacToken] = [
-    req.headers.login_token,
-    req.headers.two_fac_token,
-  ];
-
-  if (loginToken == null || twoFacToken == null) {
-    console.log('auth tokens not found');
-    return res.status(401).send({ error: 'Unauthorized' });
+async function firebaseAuthMiddleware(req, res, next) {
+  const loginToken = req.headers.login_token;
+  req.locals = req.locals || {};
+  if (loginToken == null) {
+    console.log("firebase token not found");
+    return res.status(401).send({ error: "Unauthorized" });
   }
   try {
     const decodedToken = await admin.auth().verifyIdToken(loginToken);
-    const firebaseRes = await db.collection('2_fac')
-      .doc(decodedToken.email)
+    req.locals.user = decodedToken;
+    return next();
+  } catch (_) {
+    console.log("could not decode token");
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+}
+
+async function twilioAuthMiddleware(req, res, next) {
+  const twoFacToken = req.headers.two_fac_token;
+  req.locals = req.locals || {};
+  if (twoFacToken == null) {
+    console.log("two fac token not found");
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+  try {
+    const firebaseRes = await db
+      .collection("2_fac")
+      .doc(req.locals.user.email)
       .get();
     const twoFacEntry = firebaseRes.data();
     if (twoFacToken === twoFacEntry.token) {
-      req.user_email = decodedToken.email;
       return next();
+    } else {
+      return res.status(401).send({ error: "Unauthorized" });
     }
-    return res.status(401).send({ error: 'Unauthorized' });
   } catch (_) {
     console.log("couldn't get a 2fac entry");
-    return res.status(401).send({ error: 'Unauthorized' });
+    return res.status(401).send({ error: "Unauthorized" });
   }
 }
 
@@ -57,20 +71,21 @@ a POST request hits this endpoint to create the corresponding user metadata
 document in Firestore.
 */
 async function handleRegister(req, res) {
-  const { email, password, phone } = req.body;
-  if (!email || !password || !phone) {
-    return res.status(400).send({ error: 'Insufficient info' });
+  const { phone } = req.body;
+  const { email } = req.locals.user;
+  if (!phone) {
+    return res.status(400).send({ error: "Insufficient info" });
   }
-  db.collection('user_metadata').doc(email).set({
+  db.collection("user_metadata").doc(email).set({
     phone,
     spotify_refresh_token: null,
   });
-  return res.status(200).send();
+  return res.status(200).json({ message: "success" });
 }
 
 /*
--- Request Body --
-idToken: this is the token returned from the Firebase authentication API
+-- Request Header --
+user: this is the token returned from the Firebase authentication API
 from the frontend by doing firebase.auth().currentUser.getIdToken(true).
 
 -- Response --
@@ -85,18 +100,10 @@ track of this transaction
 to authenticate into other endpoints
 */
 async function handleLogin(req, res) {
-  const { idToken } = req.body;
-  if (!idToken) {
-    return res.status(400).send({ error: 'Missing token' });
-  }
   try {
-    const decodedToken = await admin
-      .auth()
-      .verifyIdToken(idToken);
-    console.log(decodedToken);
-    const { email } = decodedToken;
+    const { email } = req.locals.user;
     if (!email) {
-      return res.status(400).send({ error: 'Invalid token' });
+      return res.status(400).send({ error: "Invalid token" });
     }
     const sessionId = uuid();
     /* generate code between 1000 and 9999 and stringify */
@@ -104,26 +111,23 @@ async function handleLogin(req, res) {
       Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000
     ).toString();
     /* this is the token the user will need to present in order to be fully authenticated
-         * we will only hand over this token to client side when 2-factor authentication is complete
-         */
+     * we will only hand over this token to client side when 2-factor authentication is complete
+     */
     const token = uuid();
-    db.collection('2_fac').doc(email).set({
+    db.collection("2_fac").doc(email).set({
       sessionId,
       code,
       token,
     });
 
-    const firebaseRes = await db.collection('user_metadata')
-      .doc(email)
-      .get();
+    const firebaseRes = await db.collection("user_metadata").doc(email).get();
     const userMetadata = firebaseRes.data();
     try {
-      const message = await client.messages
-        .create({
-          to: userMetadata.phone,
-          from: process.env.TWILIO_REGISTERED_NUMBER,
-          body: `Your hopscotch login code: ${code}`,
-        });
+      const message = await client.messages.create({
+        to: userMetadata.phone,
+        from: process.env.TWILIO_REGISTERED_NUMBER,
+        body: `Your hopscotch login code: ${code}`,
+      });
       console.log(message.sid);
       return res.status(200).send({ sessionId });
     } catch (error) {
@@ -131,7 +135,7 @@ async function handleLogin(req, res) {
       return res.status(500).send({ error });
     }
   } catch (_) {
-    return res.status(400).send({ error: 'Invalid token' });
+    return res.status(400).send({ error: "Invalid token" });
   }
 }
 
@@ -148,29 +152,32 @@ these checks then return the user the token they can use to make requests
 to other endpoints.
 */
 async function handle2FactorAuthentication(req, res) {
-  const { email, sessionId, code } = req.body;
-  if (!sessionId || !code) {
-    return res.status(400).send({ error: 'Invalid request' });
+  const { sessionId, code } = req.body;
+  const { email } = req.locals.user;
+  if (!sessionId || !code || !email) {
+    return res.status(400).send({ error: "Invalid request" });
   }
   try {
-    const firebaseRes = await db.collection('2_fac')
-      .doc(email)
-      .get();
+    const firebaseRes = await db.collection("2_fac").doc(email).get();
     const twoFacEntry = firebaseRes.data();
     if (sessionId === twoFacEntry.sessionId && code === twoFacEntry.code) {
       return res.status(200).send({ token: twoFacEntry.token });
     }
-    return res.status(401).send({ error: 'Incorrect code' });
+    return res.status(401).send({ error: "Incorrect code" });
   } catch (_) {
-    return res.status(401).send({ error: 'No session found' });
+    return res.status(401).send({ error: "No session found" });
   }
 }
 
 function getAuthRoutes() {
   const router = express.Router();
-  router.post('/register', handleRegister);
-  router.post('/login', handleLogin);
-  router.post('/2fac', handle2FactorAuthentication);
+  router.post("/register", handleRegister);
+  router.get("/init2facSession", handleLogin);
+  router.post("/complete2fac", handle2FactorAuthentication);
   return router;
 }
-module.exports = { authMiddleware, getAuthRoutes };
+module.exports = {
+  firebaseAuthMiddleware,
+  twilioAuthMiddleware,
+  getAuthRoutes,
+};

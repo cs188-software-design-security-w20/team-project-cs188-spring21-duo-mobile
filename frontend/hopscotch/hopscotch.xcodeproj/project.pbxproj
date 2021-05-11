@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A5F16AB264A9DFA00F28539 /* EnterVerificationCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5F16AA264A9DFA00F28539 /* EnterVerificationCodeView.swift */; };
 		1A61463026468BBC009B5D46 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A61462F26468BBC009B5D46 /* AuthStore.swift */; };
 		1A614639264690B9009B5D46 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A614638264690B9009B5D46 /* AuthView.swift */; };
 		1A61467F2648B09B009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */; };
@@ -14,6 +15,9 @@
 		1A6146812648B09B009B5D46 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */; };
 		1A61471526490418009B5D46 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A61471426490418009B5D46 /* Config.swift */; };
 		1A61471A26490435009B5D46 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61471926490435009B5D46 /* Config.plist */; };
+		1A61472026490C6B009B5D46 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A61471F26490C6B009B5D46 /* APIClient.swift */; };
+		1A61472826494061009B5D46 /* TwoFacAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A61472726494061009B5D46 /* TwoFacAuthView.swift */; };
+		1A614738264A210E009B5D46 /* EnterPhoneNumberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A614737264A210E009B5D46 /* EnterPhoneNumberView.swift */; };
 		1A8525EA9AC8E3FA1CB0CE02 /* Pods_hopscotch_hopscotchUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D37BC2FCE1F40C7DEE0C075 /* Pods_hopscotch_hopscotchUITests.framework */; };
 		1AE1DD9426460F8400BFA954 /* HopscotchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE1DD9326460F8400BFA954 /* HopscotchApp.swift */; };
 		1AE1DD9626460F8400BFA954 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE1DD9526460F8400BFA954 /* ContentView.swift */; };
@@ -43,11 +47,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1A5F16AA264A9DFA00F28539 /* EnterVerificationCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterVerificationCodeView.swift; sourceTree = "<group>"; };
 		1A61462F26468BBC009B5D46 /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
 		1A614638264690B9009B5D46 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		1A61467E2648B09B009B5D46 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1A61471426490418009B5D46 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Config.swift; path = hopscotch/Config.swift; sourceTree = SOURCE_ROOT; };
 		1A61471926490435009B5D46 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Config.plist; path = hopscotch/Config.plist; sourceTree = SOURCE_ROOT; };
+		1A61471F26490C6B009B5D46 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		1A61472726494061009B5D46 /* TwoFacAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFacAuthView.swift; sourceTree = "<group>"; };
+		1A614737264A210E009B5D46 /* EnterPhoneNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPhoneNumberView.swift; sourceTree = "<group>"; };
 		1AE1DD9026460F8300BFA954 /* hopscotch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hopscotch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AE1DD9326460F8400BFA954 /* HopscotchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HopscotchApp.swift; sourceTree = "<group>"; };
 		1AE1DD9526460F8400BFA954 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -112,6 +120,7 @@
 		1A61462B26468B92009B5D46 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				1A614736264A20F6009B5D46 /* TwoFacAuth */,
 				1A61462F26468BBC009B5D46 /* AuthStore.swift */,
 				1A614638264690B9009B5D46 /* AuthView.swift */,
 			);
@@ -125,6 +134,31 @@
 				1A61471926490435009B5D46 /* Config.plist */,
 			);
 			path = Config;
+			sourceTree = "<group>";
+		};
+		1A61471E26490B67009B5D46 /* Backend */ = {
+			isa = PBXGroup;
+			children = (
+				1A61471F26490C6B009B5D46 /* APIClient.swift */,
+			);
+			path = Backend;
+			sourceTree = "<group>";
+		};
+		1A61472F2649D2D9009B5D46 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		1A614736264A20F6009B5D46 /* TwoFacAuth */ = {
+			isa = PBXGroup;
+			children = (
+				1A61472726494061009B5D46 /* TwoFacAuthView.swift */,
+				1A614737264A210E009B5D46 /* EnterPhoneNumberView.swift */,
+				1A5F16AA264A9DFA00F28539 /* EnterVerificationCodeView.swift */,
+			);
+			path = TwoFacAuth;
 			sourceTree = "<group>";
 		};
 		1AE1DD8726460F8300BFA954 = {
@@ -152,6 +186,8 @@
 		1AE1DD9226460F8300BFA954 /* hopscotch */ = {
 			isa = PBXGroup;
 			children = (
+				1A61472F2649D2D9009B5D46 /* Utils */,
+				1A61471E26490B67009B5D46 /* Backend */,
 				1A61471326490410009B5D46 /* Config */,
 				1A61462B26468B92009B5D46 /* Auth */,
 				1AE1DD9326460F8400BFA954 /* HopscotchApp.swift */,
@@ -445,10 +481,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AE1DD9626460F8400BFA954 /* ContentView.swift in Sources */,
+				1A614738264A210E009B5D46 /* EnterPhoneNumberView.swift in Sources */,
 				1A61463026468BBC009B5D46 /* AuthStore.swift in Sources */,
 				1A61471526490418009B5D46 /* Config.swift in Sources */,
+				1A5F16AB264A9DFA00F28539 /* EnterVerificationCodeView.swift in Sources */,
 				1A614639264690B9009B5D46 /* AuthView.swift in Sources */,
+				1A61472826494061009B5D46 /* TwoFacAuthView.swift in Sources */,
 				1AE1DD9426460F8400BFA954 /* HopscotchApp.swift in Sources */,
+				1A61472026490C6B009B5D46 /* APIClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

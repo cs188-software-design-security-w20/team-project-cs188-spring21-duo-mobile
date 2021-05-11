@@ -13,13 +13,20 @@ struct ContentView: View {
     var body: some View {
         Group {
             if (auth.session != nil) {
-                VStack {
-                    Text("Hello user!")
-                    Button(action: { _ = auth.signOut() }) {
-                        Text("Sign Out")
+                Group {
+                    if (auth.twilioAuthToken != nil) {
+                        VStack {
+                            Text("Hello user!")
+                            Text("Firebase uid: \(auth.session!.user.uid)")
+                            Text("Twilio Token: \(auth.twilioAuthToken!)")
+                            Button(action: { _ = auth.signOut() }) {
+                                Text("Sign Out")
+                            }
+                        }
+                    } else {
+                        TwoFacAuthView()
                     }
                 }
-            
             } else {
                 AuthView()
             }

@@ -9,7 +9,8 @@ Add the following files to `frontend/hopscotch/hopscotch/`:
 - `GoogleService-info.plist`: Downloaded from Firebase project
 - `Config.plist`: Configuring projects
   - Key-value pairs:
-    - `API_URL`: Backend API URL. For example, "http://localhost:5000/" for dev/
+    - `API_URL`: Backend API URL. For example, "http://localhost:5000" for dev/
+      - Make sure there is no trailing slash at the end of the URL!
 
 ### Authentication web demo
 

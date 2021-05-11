@@ -10,7 +10,8 @@ import Foundation
 struct Config {
     private static var plistDict: NSDictionary? {
         if let path = Bundle.main.path(forResource: "Config", ofType: "plist") {
-            return NSDictionary(contentsOfFile: path)
+            let dict = NSDictionary(contentsOfFile: path)
+            return dict
         } else {
             return nil
         }
