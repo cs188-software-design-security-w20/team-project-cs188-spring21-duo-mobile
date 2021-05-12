@@ -1,11 +1,11 @@
-const express = require("express");
-const SpotifyWebApi = require("spotify-web-api-node");
-const crypto = require("crypto");
-const { firebase } = require("../firebase-init.js");
-const { firebaseAuthMiddleware, twilioAuthMiddleware } = require("./auth");
+const express = require('express');
+const SpotifyWebApi = require('spotify-web-api-node');
+const crypto = require('crypto');
+const { firebase } = require('../firebase-init.js');
+const { firebaseAuthMiddleware, twilioAuthMiddleware } = require('./auth');
 
 const db = firebase.firestore();
-require("dotenv").config();
+require('dotenv').config();
 
 const Spotify = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,
@@ -15,15 +15,15 @@ const Spotify = new SpotifyWebApi({
 
 // Scopes to request.
 const SPOTIFY_SCOPES = [
-  "user-read-email",
-  "playlist-modify-public",
-  "playlist-modify-private",
-  "playlist-read-private",
-  "playlist-read-collaborative",
-  "user-read-playback-state",
-  "user-read-currently-playing",
-  "user-library-read",
-  "user-top-read",
+  'user-read-email',
+  'playlist-modify-public',
+  'playlist-modify-private',
+  'playlist-read-private',
+  'playlist-read-collaborative',
+  'user-read-playback-state',
+  'user-read-currently-playing',
+  'user-library-read',
+  'user-top-read',
 ];
 
 /*
@@ -39,16 +39,16 @@ Creates a url that can be visited by the client to link Spotify account with
 your Hopscotch account.
 */
 async function handleLink(req, res) {
-  const state = crypto.randomBytes(20).toString("hex");
+  const state = crypto.randomBytes(20).toString('hex');
   // Store the state in a document for lookup later, store the corresponding user's email
-  await db.collection("spotify_state").doc(state.toString()).set({
+  await db.collection('spotify_state').doc(state.toString()).set({
     email: req.locals.user.email,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
 
   const authorizeURL = Spotify.createAuthorizeURL(
     SPOTIFY_SCOPES,
-    state.toString()
+    state.toString(),
   );
   return res.json({ authorizeURL });
 }
@@ -69,10 +69,10 @@ async function handleOauthCallback(req, res) {
   try {
     const { code, state } = req.query;
     if (!code || !state) {
-      throw new Error("Missing Spotify code or state token.");
+      throw new Error('Missing Spotify code or state token.');
     }
     // If no error, figure out whose spotify data this is using the state parameter
-    const spotifyStateRef = db.collection("spotify_state").doc(state);
+    const spotifyStateRef = db.collection('spotify_state').doc(state);
     const userEmail = await spotifyStateRef.get().then((doc) => {
       const { email } = doc.data();
       return email;
@@ -88,7 +88,7 @@ async function handleOauthCallback(req, res) {
       const refreshToken = data.body.refresh_token;
 
       // Get spotify data and store in the user's document
-      db.collection("user_metadata").doc(userEmail).update({
+      db.collection('user_metadata').doc(userEmail).update({
         spotify_refresh_token: refreshToken,
       });
     });
@@ -118,7 +118,7 @@ async function handleCurrentlyPlaying(req, res) {
       }
     });
     const song = await Spotify.getMyCurrentPlayingTrack().then(
-      (data) => data.body.item
+      (data) => data.body.item,
     );
     return res.status(200).json({ song });
   } catch (e) {
@@ -138,12 +138,12 @@ async function handleCurrentlyPlaying(req, res) {
 async function spotifyTokenMiddleware(req, res, next) {
   try {
     req.locals.user_spotify_refresh_token = await db
-      .collection("user_metadata")
+      .collection('user_metadata')
       .doc(req.locals.user.email)
       .get()
       .then((doc) => doc.data().spotify_refresh_token);
     if (!req.locals.user_spotify_refresh_token) {
-      throw new Error("No spotify token found.");
+      throw new Error('No spotify token found.');
     }
     return next();
   } catch (e) {
@@ -155,15 +155,15 @@ async function spotifyTokenMiddleware(req, res, next) {
 
 function getSpotifyRoutes() {
   const router = express.Router();
-  router.get("/link", firebaseAuthMiddleware, twilioAuthMiddleware, handleLink);
+  router.get('/link', firebaseAuthMiddleware, twilioAuthMiddleware, handleLink);
   // oauth-callback route doesn't have authMiddleware since it is called by Spotify
-  router.get("/oauth-callback", handleOauthCallback);
+  router.get('/oauth-callback', handleOauthCallback);
   router.get(
-    "/currently-playing",
+    '/currently-playing',
     firebaseAuthMiddleware,
     twilioAuthMiddleware,
     spotifyTokenMiddleware,
-    handleCurrentlyPlaying
+    handleCurrentlyPlaying,
   );
   return router;
 }

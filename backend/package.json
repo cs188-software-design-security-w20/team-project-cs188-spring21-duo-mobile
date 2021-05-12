@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "export REDIS_HOST=127.0.0.1 && node src/index.js",
+    "dev": "export REDIS_URL=redis://localhost:6379 && node src/index.js",
     "start": "node src/index.js",
     "lint": "yarn run eslint src --fix",
     "build": "docker-compose --build",
