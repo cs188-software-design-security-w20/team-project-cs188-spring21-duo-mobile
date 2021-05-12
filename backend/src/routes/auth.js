@@ -26,9 +26,14 @@ async function firebaseAuthMiddleware(req, res, next) {
     return res.status(401).send({ error: 'Unauthorized' });
   }
   try {
-    const decodedToken = await admin.auth().verifyIdToken(loginToken);
-    req.locals.user = decodedToken;
-    return next();
+    return admin
+      .auth()
+      .verifyIdToken(loginToken, true)
+      .then((decodedToken) => {
+        req.locals.user = decodedToken;
+        next();
+      })
+      .catch(() => res.status(401).send({ error: 'Unauthorized' }));
   } catch (_) {
     console.log('could not decode token');
     return res.status(401).send({ error: 'Unauthorized' });
@@ -60,6 +65,25 @@ async function twilioAuthMiddleware(req, res, next) {
 
 /*
 
+-- Request Body --
+phone: Phone number
+
+Make sure a valid 10-digit US phone number is sent in the body.
+*/
+async function validatePhoneForRegistrationMiddleware(req, res, next) {
+  const { phone } = req.body;
+  const { uid } = req.locals.user;
+  const reg = new RegExp('^[0-9]{10}$');
+  if (!phone || !reg.test(phone)) {
+    await admin.auth().deleteUser(uid);
+    return res.status(400).send({ error: 'Invalid phone number' });
+  }
+  req.locals.user.phone = phone;
+  return next();
+}
+
+/*
+
 POST
 
 Register info under user (later extendable to other fields, for now it's just phone)
@@ -75,11 +99,7 @@ a POST request hits this endpoint to create the corresponding user metadata
 document in Firestore.
 */
 async function handleRegister(req, res) {
-  const { phone } = req.body;
-  const { email } = req.locals.user;
-  if (!phone) {
-    return res.status(400).send({ error: 'Insufficient info' });
-  }
+  const { email, phone } = req.locals.user;
   db.collection('user_metadata').doc(email).set({
     phone,
     spotify_refresh_token: null,
@@ -175,7 +195,11 @@ async function handle2FactorAuthentication(req, res) {
 
 function getAuthRoutes() {
   const router = express.Router();
-  router.post('/register', handleRegister);
+  router.post(
+    '/register',
+    validatePhoneForRegistrationMiddleware,
+    handleRegister,
+  );
   router.get('/init2facSession', handleInit2facSession);
   router.post('/complete2fac', handle2FactorAuthentication);
   return router;
