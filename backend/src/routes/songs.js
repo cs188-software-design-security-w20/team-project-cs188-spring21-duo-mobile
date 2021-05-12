@@ -5,18 +5,24 @@ const { firebase } = require('../firebase-init.js');
 const db = firebase.firestore();
 
 async function handleSong(req, res) {
-  const { lat, lng, songId } = req.body;
-  if (!lat || !lng || !songId) {
+  const { lat, lng, songData } = req.body;
+  if (!lat || !lng || !songData) {
     return res.status(400).send('Insufficient info');
   }
   // TODO: Add data validation
   const result = await db.collection('songEntries').add({
-    songId,
+    songData,
     locationHash: geofire.geohashForLocation([lat, lng]),
     lat,
     lng,
+    ts: firebase.firestore.FieldValue.serverTimestamp(),
   });
-  return res.status(200).send(result.id);
+
+  const userRef = db.collection('user_metadata').doc(req.user_email);
+
+  return userRef.update({
+    song_entries: firebase.firestore.FieldValue.arrayUnion(result.id),
+  }).then(() => res.status(200).send(result.id)).catch((e) => res.status(500).send(e));
 }
 
 async function handleNearbySongs(req, res) {
@@ -47,7 +53,7 @@ async function handleNearbySongs(req, res) {
     const dCenter = [doc.get('lat'), doc.get('lng')];
     const distInKm = geofire.distanceBetween(dCenter, center);
     if (distInKm <= radius) {
-      result.push(doc.data().songId);
+      result.push(doc.data().songData);
     }
     return result;
   }, []));

@@ -84,6 +84,7 @@ async function handleRegister(req, res) {
   db.collection("user_metadata").doc(email).set({
     phone,
     spotify_refresh_token: null,
+    song_entries: [],
   });
   return res.status(200).json({ message: "success" });
 }
