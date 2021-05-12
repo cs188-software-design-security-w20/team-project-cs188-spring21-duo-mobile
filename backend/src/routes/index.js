@@ -10,19 +10,12 @@ const { getSpotifyRoutes, getSpotifyExternalRoutes } = require('./spotify.js');
 
 function getRoutes() {
   const router = express.Router();
-  router.use('/auth', firebaseAuthMiddleware, getAuthRoutes());
-  router.use(
-    '/songs',
-    firebaseAuthMiddleware,
-    twilioAuthMiddleware,
-    getSongRoutes(),
-  );
-  router.use(
-    '/spotify',
-    firebaseAuthMiddleware,
-    twilioAuthMiddleware,
-    getSpotifyRoutes(),
-  );
+  router.use(firebaseAuthMiddleware);
+  router.use('/auth', getAuthRoutes());
+  // Twilio Middlware will only apply to routes below this statement
+  router.use(twilioAuthMiddleware);
+  router.use('/songs', getSongRoutes());
+  router.use('/spotify', getSpotifyRoutes());
   return router;
 }
 
