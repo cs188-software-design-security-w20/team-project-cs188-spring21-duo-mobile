@@ -2,7 +2,6 @@ const express = require('express');
 const SpotifyWebApi = require('spotify-web-api-node');
 const crypto = require('crypto');
 const { firebase } = require('../firebase-init.js');
-const { firebaseAuthMiddleware, twilioAuthMiddleware } = require('./auth');
 
 const db = firebase.firestore();
 require('dotenv').config();
@@ -10,7 +9,7 @@ require('dotenv').config();
 const Spotify = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  redirectUri: `${process.env.BASE_URL}/api/spotify/oauth-callback`,
+  redirectUri: `${process.env.BASE_URL}/ext/spotify/oauth-callback`,
 });
 
 // Scopes to request.
@@ -28,8 +27,6 @@ const SPOTIFY_SCOPES = [
 
 /*
 -- Request Params --
-- redirectHost (OPTIONAL) -- If you are attempting to run this locally, you can pass in your local server host (e.g. "http://localhost:5000")
-
 needs to be an authenticated request.
 
 -- Response --
@@ -78,11 +75,12 @@ async function handleOauthCallback(req, res) {
       return email;
     });
 
-    await Spotify.authorizationCodeGrant(code, (error, data) => {
+    await Spotify.authorizationCodeGrant(code, async (error, data) => {
       if (error) {
         throw error;
       }
       Spotify.setAccessToken(data.body.access_token);
+      const { body: spotifyProfile } = await Spotify.getMe();
 
       // We have a Spotify refresh token now.
       const refreshToken = data.body.refresh_token;
@@ -90,6 +88,7 @@ async function handleOauthCallback(req, res) {
       // Get spotify data and store in the user's document
       db.collection('user_metadata').doc(userEmail).update({
         spotify_refresh_token: refreshToken,
+        spotify_profile: spotifyProfile,
       });
     });
     return res.status(200).json({ success: true });
@@ -129,7 +128,7 @@ async function handleCurrentlyPlaying(req, res) {
 }
 
 /*
--- Request Property --
+-- Request Locals Property --
   - user_email -- Requires the request.user_email property to be set so we know
                   which user to fetch token for. This is set in the authMiddleware.
 
@@ -155,17 +154,19 @@ async function spotifyTokenMiddleware(req, res, next) {
 
 function getSpotifyRoutes() {
   const router = express.Router();
-  router.get('/link', firebaseAuthMiddleware, twilioAuthMiddleware, handleLink);
-  // oauth-callback route doesn't have authMiddleware since it is called by Spotify
-  router.get('/oauth-callback', handleOauthCallback);
-  router.get(
-    '/currently-playing',
-    firebaseAuthMiddleware,
-    twilioAuthMiddleware,
-    spotifyTokenMiddleware,
-    handleCurrentlyPlaying,
-  );
+  router.get('/link', handleLink);
+  router.get('/currently-playing', spotifyTokenMiddleware, handleCurrentlyPlaying);
   return router;
 }
 
-module.exports = { getSpotifyRoutes };
+function getSpotifyExternalRoutes() {
+  const router = express.Router();
+  // oauth-callback route doesn't have authMiddleware since it is called by Spotify
+  router.get('/oauth-callback', handleOauthCallback);
+  return router;
+}
+
+module.exports = {
+  getSpotifyRoutes,
+  getSpotifyExternalRoutes,
+};
