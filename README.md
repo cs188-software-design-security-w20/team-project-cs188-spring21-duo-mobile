@@ -65,7 +65,7 @@ The values for the environment variables prefixed with GOOGLE_CREDENTIALS can be
 brew install redis # Make sure redis is installed
 yarn install
 redis-server & # Start redis server in the background
-yarn start
+yarn dev
 ```
 
 ### Running the server via docker compose
@@ -76,10 +76,12 @@ From the backend directory:
 docker-compose up --build
 ```
 
+You can use either docker compose or `yarn dev` to develop locally, though for docker compose you may have to rebuild each time you make a code change.
 ### **Deploying container to Heroku**
 
 See [this heroku article](https://devcenter.heroku.com/articles/local-development-with-docker-compose) about developing locally with docker compose
 and then deplying to heroku.
+
 
 Authenticate to Heroku
 
@@ -91,8 +93,7 @@ heroku container:login
 Once you have tested locally via `docker-compose up`, push and release changes to heroku by doing:
 
 ```
-heroku container:push web -a hopscotch-backend
-heroku container:release web -a hopscotch-backend
+yarn deploy
 ```
 
 ### Linting
