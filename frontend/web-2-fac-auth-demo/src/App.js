@@ -58,8 +58,13 @@ function App() {
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then(async (_) => {
-        await axios.post(
+      .then(async () => {
+        return firebase.auth().currentUser.getIdToken(true);
+      })
+      .then((loginToken) => {
+        setLoginToken(loginToken);
+        localStorage.setItem("loginToken", loginToken);
+        return axios.post(
           `${BASE_URL}/api/auth/register`,
           {
             phone,
@@ -70,14 +75,12 @@ function App() {
             },
           }
         );
-        return firebase.auth().currentUser.getIdToken(true);
       })
-      .then((idToken) => {
-        setLoginToken(idToken);
-        localStorage.setItem("loginToken", idToken);
+      .then(() => {
+        let token = localStorage.getItem("loginToken");
         return axios.get(`${BASE_URL}/api/auth/init2facSession`, {
           headers: {
-            login_token: idToken,
+            login_token: token,
           },
         });
       })

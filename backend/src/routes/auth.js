@@ -26,14 +26,16 @@ async function firebaseAuthMiddleware(req, res, next) {
     return res.status(401).send({ error: "Unauthorized" });
   }
   try {
-    const decodedToken = await admin
+    admin
       .auth()
       .verifyIdToken(loginToken, true)
-      .catch(()=> {
+      .then((decodedToken) => {
+        req.locals.user = decodedToken;
+        next();
+      })
+      .catch(() => {
         return res.status(401).send({ error: "Unauthorized" });
       });
-    req.locals.user = decodedToken;
-    return next();
   } catch (_) {
     console.log("could not decode token");
     return res.status(401).send({ error: "Unauthorized" });
@@ -71,14 +73,17 @@ phone: Phone number
 
 Make sure a valid 10-digit US phone number is sent in the body.
 */
-async function validatePhoneMiddleware(req, res, next) {
+async function validatePhoneForRegistrationMiddleware(req, res, next) {
   const { phone } = req.body;
+  const uid = req.locals.user.uid;
   const reg = new RegExp("^[0-9]{10}$");
-  if (!phone || reg.test(phone)) {
+  if (!phone || !reg.test(phone)) {
+    await admin.auth().deleteUser(uid);
     return res.status(400).send({ error: "Invalid phone number" });
+  } else {
+    req.locals.user.phone = phone;
+    next();
   }
-  req.locals.user.phone = phone;
-  next();
 }
 
 /*
@@ -194,7 +199,11 @@ async function handle2FactorAuthentication(req, res) {
 
 function getAuthRoutes() {
   const router = express.Router();
-  router.post("/register", validatePhoneMiddleware, handleRegister);
+  router.post(
+    "/register",
+    validatePhoneForRegistrationMiddleware,
+    handleRegister
+  );
   router.get("/init2facSession", handleInit2facSession);
   router.post("/complete2fac", handle2FactorAuthentication);
   return router;
