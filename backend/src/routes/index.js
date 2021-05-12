@@ -6,7 +6,7 @@ const {
   getAuthRoutes,
 } = require('./auth.js');
 const { getSongRoutes } = require('./songs.js');
-const { getSpotifyRoutes } = require('./spotify.js');
+const { getSpotifyRoutes, getSpotifyExternalRoutes } = require('./spotify.js');
 
 function getRoutes() {
   const router = express.Router();
@@ -17,8 +17,19 @@ function getRoutes() {
     twilioAuthMiddleware,
     getSongRoutes(),
   );
-  router.use('/spotify', getSpotifyRoutes());
+  router.use(
+    '/spotify',
+    firebaseAuthMiddleware,
+    twilioAuthMiddleware,
+    getSpotifyRoutes(),
+  );
   return router;
 }
 
-module.exports = { getRoutes };
+function getExternalRoutes() {
+  const router = express.Router();
+  router.use('/spotify', getSpotifyExternalRoutes());
+  return router;
+}
+
+module.exports = { getRoutes, getExternalRoutes };

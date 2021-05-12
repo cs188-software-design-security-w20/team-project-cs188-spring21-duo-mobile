@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
 
-const { getRoutes } = require('./routes/index.js');
+const { getRoutes, getExternalRoutes } = require('./routes/index.js');
 const { rateLimiterMiddleware } = require('./rate-limiter');
 const redisClient = require('./redis-client');
 
@@ -45,6 +45,7 @@ function startServer({ port = process.env.PORT || 5000 } = {}) {
   app.use(cors());
   app.use(bodyParser.json());
   app.use('/api', debug, rateLimiterMiddleware, getRoutes());
+  app.use('/ext', getExternalRoutes());
   app.get('/test', debug, (req, res) => {
     res.send('test');
   });
