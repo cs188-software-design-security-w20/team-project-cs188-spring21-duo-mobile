@@ -60,8 +60,13 @@ async function twilioAuthMiddleware(req, res, next) {
 }
 
 /*
+
+POST
+
+Register info under user (later extendable to other fields, for now it's just phone)
+
 -- Request Body --
-email, password, phone
+phone: Phone number
 
 -- Response --
 None other than 200 response status if success
@@ -84,9 +89,8 @@ async function handleRegister(req, res) {
 }
 
 /*
--- Request Header --
-user: this is the token returned from the Firebase authentication API
-from the frontend by doing firebase.auth().currentUser.getIdToken(true).
+
+GET
 
 -- Response --
 sessionId or error
@@ -99,7 +103,7 @@ track of this transaction
 - token: uuid generated to give to the user once they pass 2-fac auth
 to authenticate into other endpoints
 */
-async function handleLogin(req, res) {
+async function handleInit2facSession(req, res) {
   try {
     const { email } = req.locals.user;
     if (!email) {
@@ -141,7 +145,7 @@ async function handleLogin(req, res) {
 
 /*
 -- Request Body --
-email, sessionId, code
+sessionId, code
 
 -- Response --
 token or error
@@ -172,7 +176,7 @@ async function handle2FactorAuthentication(req, res) {
 function getAuthRoutes() {
   const router = express.Router();
   router.post("/register", handleRegister);
-  router.get("/init2facSession", handleLogin);
+  router.get("/init2facSession", handleInit2facSession);
   router.post("/complete2fac", handle2FactorAuthentication);
   return router;
 }

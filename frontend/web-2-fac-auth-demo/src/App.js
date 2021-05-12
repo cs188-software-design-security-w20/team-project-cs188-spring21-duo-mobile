@@ -38,8 +38,12 @@ function App() {
   const [code, setCode] = useState("");
 
   // for authenticated state
-  const [twoFacToken, setTwoFacToken] = useState(localStorage.getItem('twoFacToken'));
-  const [loginToken, setLoginToken] = useState(localStorage.getItem('loginToken'));
+  const [twoFacToken, setTwoFacToken] = useState(
+    localStorage.getItem("twoFacToken")
+  );
+  const [loginToken, setLoginToken] = useState(
+    localStorage.getItem("loginToken")
+  );
 
   const [songs, setSongs] = useState("");
   const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
@@ -55,18 +59,26 @@ function App() {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(async (_) => {
-        await axios.post(`${BASE_URL}/api/auth/register`, {
-          email,
-          password,
-          phone,
-        });
+        await axios.post(
+          `${BASE_URL}/api/auth/register`,
+          {
+            phone,
+          },
+          {
+            headers: {
+              login_token: loginToken,
+            },
+          }
+        );
         return firebase.auth().currentUser.getIdToken(true);
       })
       .then((idToken) => {
         setLoginToken(idToken);
-        localStorage.setItem('loginToken', idToken);
-        return axios.post(`${BASE_URL}/api/auth/login`, {
-          idToken,
+        localStorage.setItem("loginToken", idToken);
+        return axios.get(`${BASE_URL}/api/auth/init2facSession`, {
+          headers: {
+            login_token: idToken,
+          },
         });
       })
       .then((res) => {
@@ -89,9 +101,11 @@ function App() {
       })
       .then((idToken) => {
         setLoginToken(idToken);
-        localStorage.setItem('loginToken', idToken);
-        return axios.post(`${BASE_URL}/api/auth/login`, {
-          idToken,
+        localStorage.setItem("loginToken", idToken);
+        return axios.get(`${BASE_URL}/api/auth/init2facSession`, {
+          headers: {
+            login_token: idToken,
+          },
         });
       })
       .then((res) => {
@@ -108,16 +122,23 @@ function App() {
   function twofactor() {
     console.log(sessionId, code);
     axios
-      .post(`${BASE_URL}/api/auth/2fac`, {
-        email,
-        sessionId,
-        code,
-      })
+      .post(
+        `${BASE_URL}/api/auth/complete2fac`,
+        {
+          sessionId,
+          code,
+        },
+        {
+          headers: {
+            login_token: loginToken,
+          },
+        }
+      )
       .then((res) => {
         const { token, error } = res.data;
         if (res.status === 200) {
           setTwoFacToken(token);
-          localStorage.setItem('twoFacToken', token)
+          localStorage.setItem("twoFacToken", token);
           setAuthState(auth_states.AUTHENTICATED);
         } else {
           console.log(error);
@@ -127,102 +148,138 @@ function App() {
   }
 
   const Authenticated = () => {
-    return <div>Welcome!
+    return (
       <div>
-        <button onClick={() => {
-          axios.get(`${BASE_URL}/api/songs/nearby?lat=34.06892&lng=-118.445183`, {
-            headers: {
-              login_token: loginToken,
-              two_fac_token: twoFacToken
-            }
-          })
-            .then((res) => {
-              if (res.status === 200) {
-                setSongs(res.data);
-              }
-            });
-        }}>get songs</button>
-        <button onClick={() => {
-          // eslint-disable-next-line no-restricted-globals
-          axios.get(`${BASE_URL}/api/spotify/link?redirectHost=${encodeURIComponent(BASE_URL)}`, {
-            headers: {
-              login_token: loginToken,
-              two_fac_token: twoFacToken
-            }
-          })
-            .then((res) => {
-              if (res.status === 200) {
-                window.open(res.data.authorizeURL, '_blank');
-              }
-            });
-        }}>link spotify</button>
-        <button onClick={() => {
-          // eslint-disable-next-line no-restricted-globals
-          axios.get(`${BASE_URL}/api/spotify/currently-playing`, {
-            headers: {
-              login_token: loginToken,
-              two_fac_token: twoFacToken
-            }
-          })
-            .then((res) => {
-              if (res.status === 200) {
-                setCurrentlyPlaying(res.data.song);
-              }
-            });
-        }}>get currently playing</button>
+        Welcome!
+        <div>
+          <button
+            onClick={() => {
+              axios
+                .get(
+                  `${BASE_URL}/api/songs/nearby?lat=34.06892&lng=-118.445183`,
+                  {
+                    headers: {
+                      login_token: loginToken,
+                      two_fac_token: twoFacToken,
+                    },
+                  }
+                )
+                .then((res) => {
+                  if (res.status === 200) {
+                    setSongs(res.data);
+                  }
+                });
+            }}
+          >
+            get songs
+          </button>
+          <button
+            onClick={() => {
+              // eslint-disable-next-line no-restricted-globals
+              axios
+                .get(
+                  `${BASE_URL}/api/spotify/link?redirectHost=${encodeURIComponent(
+                    BASE_URL
+                  )}`,
+                  {
+                    headers: {
+                      login_token: loginToken,
+                      two_fac_token: twoFacToken,
+                    },
+                  }
+                )
+                .then((res) => {
+                  if (res.status === 200) {
+                    window.open(res.data.authorizeURL, "_blank");
+                  }
+                });
+            }}
+          >
+            link spotify
+          </button>
+          <button
+            onClick={() => {
+              // eslint-disable-next-line no-restricted-globals
+              axios
+                .get(`${BASE_URL}/api/spotify/currently-playing`, {
+                  headers: {
+                    login_token: loginToken,
+                    two_fac_token: twoFacToken,
+                  },
+                })
+                .then((res) => {
+                  if (res.status === 200) {
+                    setCurrentlyPlaying(res.data.song);
+                  }
+                });
+            }}
+          >
+            get currently playing
+          </button>
 
-        <button onClick={() => setPhone("")}>refresh phone #</button>
-        <div>{JSON.stringify(songs)}</div>
-        <div>Currently Playing: {(!currentlyPlaying) ? "nothing atm" : `${currentlyPlaying.name} by ${currentlyPlaying.artists.map((artist) => artist.name).join(", ")}`}</div>
+          <button onClick={() => setPhone("")}>refresh phone #</button>
+          <div>{JSON.stringify(songs)}</div>
+          <div>
+            Currently Playing:{" "}
+            {!currentlyPlaying
+              ? "nothing atm"
+              : `${currentlyPlaying.name} by ${currentlyPlaying.artists
+                  .map((artist) => artist.name)
+                  .join(", ")}`}
+          </div>
+        </div>
       </div>
-    </div>;
+    );
   };
 
-  return <div className="App">
-    {authState === auth_states.UNAUTHENTICATED ?
-      <div>
-      <div>Email</div>
-      <input
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-        }}
-      />
-      <div>Password</div>
-      <input
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-        }}
-      />
-      <div>Phone</div>
-      <input
-        value={phone}
-        onChange={(e) => {
-          setPhone(e.target.value);
-        }}
-      />
-      <div>
-        <button onClick={register}>Register</button>
-        <button onClick={login}>Login</button>
-      </div>
-    </div> :
-      authState === auth_states.TWOFACTOR ?
-      <div>
-        <div>Code</div>
-        <input
-          value={code}
-          onChange={(e) => {
-            setCode(e.target.value);
-          }}
-        />
+  return (
+    <div className="App">
+      {authState === auth_states.UNAUTHENTICATED ? (
         <div>
-          <button onClick={twofactor}>Submit</button>
+          <div>Email</div>
+          <input
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+          />
+          <div>Password</div>
+          <input
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
+          <div>Phone</div>
+          <input
+            value={phone}
+            onChange={(e) => {
+              setPhone(e.target.value);
+            }}
+          />
+          <div>
+            <button onClick={register}>Register</button>
+            <button onClick={login}>Login</button>
+          </div>
         </div>
-      </div> :
-      <Authenticated />
-    }
-  </div>
+      ) : authState === auth_states.TWOFACTOR ? (
+        <div>
+          <div>Code</div>
+          <input
+            value={code}
+            onChange={(e) => {
+              setCode(e.target.value);
+            }}
+          />
+          <div>
+            <button onClick={twofactor}>Submit</button>
+          </div>
+        </div>
+      ) : (
+        <Authenticated />
+      )}
+    </div>
+  );
 }
 
 export default App;
