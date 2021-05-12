@@ -26,16 +26,14 @@ async function firebaseAuthMiddleware(req, res, next) {
     return res.status(401).send({ error: 'Unauthorized' });
   }
   try {
-    admin
+    return admin
       .auth()
       .verifyIdToken(loginToken, true)
       .then((decodedToken) => {
         req.locals.user = decodedToken;
         next();
       })
-      .catch(() => {
-        return res.status(401).send({ error: "Unauthorized" });
-      });
+      .catch(() => res.status(401).send({ error: 'Unauthorized' }));
   } catch (_) {
     console.log('could not decode token');
     return res.status(401).send({ error: 'Unauthorized' });
@@ -74,15 +72,14 @@ Make sure a valid 10-digit US phone number is sent in the body.
 */
 async function validatePhoneForRegistrationMiddleware(req, res, next) {
   const { phone } = req.body;
-  const uid = req.locals.user.uid;
-  const reg = new RegExp("^[0-9]{10}$");
+  const { uid } = req.locals.user;
+  const reg = new RegExp('^[0-9]{10}$');
   if (!phone || !reg.test(phone)) {
     await admin.auth().deleteUser(uid);
-    return res.status(400).send({ error: "Invalid phone number" });
-  } else {
-    req.locals.user.phone = phone;
-    next();
+    return res.status(400).send({ error: 'Invalid phone number' });
   }
+  req.locals.user.phone = phone;
+  return next();
 }
 
 /*
@@ -103,7 +100,7 @@ document in Firestore.
 */
 async function handleRegister(req, res) {
   const { email, phone } = req.locals.user;
-  db.collection("user_metadata").doc(email).set({
+  db.collection('user_metadata').doc(email).set({
     phone,
     spotify_refresh_token: null,
     song_entries: [],
@@ -199,12 +196,12 @@ async function handle2FactorAuthentication(req, res) {
 function getAuthRoutes() {
   const router = express.Router();
   router.post(
-    "/register",
+    '/register',
     validatePhoneForRegistrationMiddleware,
-    handleRegister
+    handleRegister,
   );
-  router.get("/init2facSession", handleInit2facSession);
-  router.post("/complete2fac", handle2FactorAuthentication);
+  router.get('/init2facSession', handleInit2facSession);
+  router.post('/complete2fac', handle2FactorAuthentication);
   return router;
 }
 module.exports = {
