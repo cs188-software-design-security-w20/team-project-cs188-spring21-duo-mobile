@@ -38,7 +38,6 @@ struct AuthView: View {
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
             SecureField("Password", text: $password)
-            
             if errorMessage != nil {
                 Text(errorMessage!)
                     .font(.system(size: 12))
@@ -53,8 +52,8 @@ struct AuthView: View {
                     Text("Sign Up")
                 }
             }
-       }
-       .padding()
+        }
+        .padding()
     }
 }
 
