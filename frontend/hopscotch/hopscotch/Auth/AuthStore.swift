@@ -71,6 +71,7 @@ class AuthStore : ObservableObject {
     func listen () {
         // monitor authentication changes using firebase
         handle = Auth.auth().addStateDidChangeListener { (auth, user) in
+            print("authStateDidChange")
             if let user = user {
                 // if we have a user, create a new user model
                 print("Got user: \(user)")

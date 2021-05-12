@@ -29,7 +29,7 @@ struct TwoFacAuthView: View {
         case enterVerificationCode
         case proceedIntoApp
     }
-    @State private var navStage: NavigationStage? = .enterPhoneNumber
+    @State private var navStage: NavigationStage? = nil
     
     var body: some View {
         NavigationView {
@@ -55,6 +55,10 @@ struct TwoFacAuthView: View {
                 
                 Button("Enter your phone number") {
                     self.navStage = .enterPhoneNumber
+                }
+                
+                Button(action: { _ = auth.signOut() }) {
+                    Text("Sign Out")
                 }
             }
             .navigationTitle("Two-factor auth")
