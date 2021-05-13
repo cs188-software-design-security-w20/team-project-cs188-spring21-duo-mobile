@@ -10,19 +10,22 @@ async function handleSong(req, res) {
     return res.status(400).send('Insufficient info');
   }
   // TODO: Add data validation
-  const result = await db.collection('songEntries').add({
+  const songDoc = {
     songData,
     locationHash: geofire.geohashForLocation([lat, lng]),
     lat,
     lng,
     ts: firebase.firestore.FieldValue.serverTimestamp(),
-  });
+  };
+  const result = await db.collection('songEntries').add(songDoc);
 
-  const userRef = db.collection('user_metadata').doc(req.user_email);
+  const userSongEntryRef = db.collection('user_metadata')
+    .doc(req.locals.user.email)
+    .collection('song_entries')
+    .doc(result.id);
 
-  return userRef.update({
-    song_entries: firebase.firestore.FieldValue.arrayUnion(result.id),
-  }).then(() => res.status(200).send(result.id)).catch((e) => res.status(500).send(e));
+  return userSongEntryRef.set(songDoc)
+    .then(() => res.status(200).send(result.id)).catch((e) => res.status(500).send(e));
 }
 
 async function handleNearbySongs(req, res) {
