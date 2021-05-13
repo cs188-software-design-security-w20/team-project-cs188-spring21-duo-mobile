@@ -34,7 +34,12 @@ export default function Homepage() {
   }, []);
   return (
     <Fragment>
-      <SongMap />
+      <Row style={{ width: "800px", height: "100vh" }}>
+        <Col>
+          <SongMap />
+        </Col>
+      </Row>
+
       {/* <Row
         gap={1}
         style={{ margin: "15px 0", width: "800px", height: "100vh" }}

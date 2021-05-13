@@ -20,12 +20,12 @@ const SongMap = () => {
   const [center, setCenter] = useState(null);
   const [selectedSong, setSelectedSong] = useState(null);
   const [nearbySongs, setNearbySongs] = useState([]);
+  const [viewport, setViewport] = useState({});
   const { getTokens } = useAuth();
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async ({ coords }) => {
-      console.log(coords);
-      setCenter([coords.longitude, coords.latitude]);
+      reCenter(coords);
       setUserLocation([coords.longitude, coords.latitude]);
       const tokens = await getTokens();
       axios
@@ -42,18 +42,31 @@ const SongMap = () => {
     });
   }, []);
 
+  const reCenter = (location, zoom) => {
+    setViewport((prev) => {
+      let newViewport = {
+        ...prev,
+        center: [location.longitude, location.latitude],
+        zoom: zoom,
+        transitionDuration: 600,
+        //transitionEasing: d3.easeCubic
+      };
+      return newViewport;
+    });
+  };
+
   return (
     <div>
       {userLocation == null ? (
         <div>Loading...</div>
       ) : (
         <Map
+          {...viewport}
           style="mapbox://styles/mapbox/streets-v9"
           containerStyle={{
-            height: "100vh",
-            width: "100vw",
+            height: "600px",
+            width: "800px",
           }}
-          center={center}
         >
           <Marker coordinates={userLocation} anchor="bottom">
             <img width="50" height="50" src={currentLocationIcon} />
