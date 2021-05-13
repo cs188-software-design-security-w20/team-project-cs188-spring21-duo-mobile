@@ -2,7 +2,23 @@
 
 ## Frontend
 
-### Add config/cert files
+### React: Add `firebase-config.js`
+
+Add `firebase-config.js` to the file. Copy the config object from the Firebase console and export it.
+
+```
+export const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "...",
+  storageBucket: "...",
+  messagingSenderId: "...",
+  appId: "...",
+  measurementId: "...",
+};
+```
+
+### iOS: Add config/cert files
 
 Add the following files to `frontend/hopscotch/hopscotch/`:
 
@@ -77,11 +93,11 @@ docker-compose up --build
 ```
 
 You can use either docker compose or `yarn dev` to develop locally, though for docker compose you may have to rebuild each time you make a code change.
+
 ### **Deploying container to Heroku**
 
 See [this heroku article](https://devcenter.heroku.com/articles/local-development-with-docker-compose) about developing locally with docker compose
 and then deplying to heroku.
-
 
 Authenticate to Heroku
 
