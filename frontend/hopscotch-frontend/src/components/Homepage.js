@@ -18,6 +18,7 @@ import axios from "axios";
 import _, { initial } from "lodash";
 import SongMap from "./SongMap";
 import CurrentlyPlaying from "./CurrentlyPlaying";
+import UserProfile from "./UserProfile";
 
 const db = firebase.firestore();
 
@@ -62,6 +63,11 @@ export default function Homepage() {
           </Card>
         </Col>
       </Row> */}
+      <Row>
+        <Col>
+          <UserProfile />
+        </Col>
+      </Row>
     </Fragment>
   );
 }
