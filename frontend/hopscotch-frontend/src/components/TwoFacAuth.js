@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import firebase from "../firebase";
 import { useEffect, useState, Fragment } from "react";
 import { useStateCallback } from "../hooks";
-import { AuthProvider, useAuth } from "../auth/authContext";
+import { useAuth } from "../auth/authContext";
 import {
   Button,
   Text,

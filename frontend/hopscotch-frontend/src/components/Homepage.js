@@ -16,6 +16,7 @@ import {
 } from "@geist-ui/react";
 import axios from "axios";
 import _, { initial } from "lodash";
+import SongMap from "./SongMap";
 
 const db = firebase.firestore();
 
@@ -32,20 +33,26 @@ export default function Homepage() {
     return () => {};
   }, []);
   return (
-    <Row gap={1} style={{ margin: "15px 0", width: "800px", height: "100vh" }}>
-      <Col span={10}>
-        <Card>
-          <Text h1>Hoem</Text>
-          <Button
-            size="mini"
-            onClick={() => {
-              signOut();
-            }}
-          >
-            Sign out
-          </Button>
-        </Card>
-      </Col>
-    </Row>
+    <Fragment>
+      <SongMap />
+      {/* <Row
+        gap={1}
+        style={{ margin: "15px 0", width: "800px", height: "100vh" }}
+      >
+        <Col span={10}>
+          <Card>
+            <Text h1>Hoem</Text>
+            <Button
+              size="mini"
+              onClick={() => {
+                signOut();
+              }}
+            >
+              Sign out
+            </Button>
+          </Card>
+        </Col>
+      </Row> */}
+    </Fragment>
   );
 }
