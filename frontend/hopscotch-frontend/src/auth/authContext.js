@@ -1,4 +1,11 @@
-import { createContext, Context, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  Context,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import firebase from "../firebase";
 import { useStateCallback } from "../hooks";
 
@@ -108,8 +115,8 @@ function useProvideAuth() {
     });
   };
 
-  const getTokens = () => {
-    new Promise(async (resolve, reject) => {
+  const getTokens = useCallback(() => {
+    return new Promise(async (resolve, reject) => {
       const idToken = user ? await user.getIdToken() : null;
       const ret = {
         login_token: idToken,
@@ -117,7 +124,7 @@ function useProvideAuth() {
       };
       resolve(ret);
     });
-  };
+  }, [user, twilioToken]);
 
   return {
     auth,

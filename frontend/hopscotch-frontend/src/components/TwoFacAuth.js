@@ -222,16 +222,7 @@ function RenderStage({ stage, setStage = () => {} }) {
 
 export default function TwoFacAuth() {
   const [stage, setStage] = useState(STAGES.ENTER_PHONE_NUMBER);
-  const {
-    user,
-    twilioToken,
-    loading,
-    signInWithGoogle,
-    signOut,
-    sendTwilioVerifCode,
-    startTwilioAuthSession,
-    getTokens,
-  } = useAuth();
+  const { loading } = useAuth();
   if (loading) return <Fragment />;
   return (
     <Row
