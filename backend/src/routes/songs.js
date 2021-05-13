@@ -37,7 +37,8 @@ async function handleNearbySongs(req, res) {
   try {
     lat = Number(lat);
     lng = Number(lng);
-    radius = radius ? Number(radius) : 25;
+    const metersIn25Miles = 40000;
+    radius = radius ? Number(radius) : metersIn25Miles;
   } catch (err) {
     return res.status(400).send('Invalid location');
   }
@@ -56,7 +57,7 @@ async function handleNearbySongs(req, res) {
     const dCenter = [doc.get('lat'), doc.get('lng')];
     const distInKm = geofire.distanceBetween(dCenter, center);
     if (distInKm <= radius) {
-      result.push(doc.data().songData);
+      result.push(doc.data());
     }
     return result;
   }, []));
