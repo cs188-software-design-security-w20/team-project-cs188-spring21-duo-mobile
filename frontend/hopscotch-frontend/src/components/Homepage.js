@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import _, { initial } from "lodash";
 import SongMap from "./SongMap";
+import CurrentlyPlaying from "./CurrentlyPlaying";
 
 const db = firebase.firestore();
 
@@ -34,8 +35,11 @@ export default function Homepage() {
   }, []);
   return (
     <Fragment>
-      <Row style={{ width: "800px", height: "100vh" }}>
-        <Col>
+      <Row gap={.8} style={{ height: "100vh" }}>
+        <Col span={8}>
+          <CurrentlyPlaying width={"100%"}/>
+        </Col>
+        <Col span={16}>
           <SongMap />
         </Col>
       </Row>
