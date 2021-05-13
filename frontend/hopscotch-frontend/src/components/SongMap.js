@@ -8,6 +8,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import currentLocationIcon from "../assets/you_are_here.png";
 import songMarkerIcon from "../assets/marker.png";
 import { useAuth } from "../auth/authContext";
+import SongWidget from "./SongWidget";
 
 const Map = ReactMapboxGl({
   accessToken:
@@ -89,18 +90,7 @@ const SongMap = () => {
               coordinates={[selectedSong.lng, selectedSong.lat]}
             >
               <div>
-                <div>{selectedSong.songData.name}</div>
-                <div>{selectedSong.songData.album.name}</div>
-                <div>
-                  <button
-                    onClick={() => {
-                      window.open(selectedSong.songData.external_urls.spotify);
-                      // console.log("Opened spotify");
-                    }}
-                  >
-                    Open in Spotify
-                  </button>
-                </div>
+                <SongWidget songId={selectedSong.songData.id} height="80px" width="100%"/>
                 <div>
                   <button
                     onClick={() => {
