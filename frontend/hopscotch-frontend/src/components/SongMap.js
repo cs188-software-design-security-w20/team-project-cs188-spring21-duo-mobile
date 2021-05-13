@@ -24,7 +24,7 @@ const SongMap = () => {
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(async ({ coords }) => {
-      console.log(coords)
+      console.log(coords);
       setCenter([coords.longitude, coords.latitude]);
       setUserLocation([coords.longitude, coords.latitude]);
       const tokens = await getTokens();

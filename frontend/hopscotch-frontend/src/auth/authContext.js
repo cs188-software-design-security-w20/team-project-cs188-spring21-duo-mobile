@@ -43,6 +43,8 @@ function useProvideAuth() {
   };
 
   useEffect(() => {
+    const twilioToken = localStorage.getItem("twilioToken");
+    setTwilioToken(twilioToken);
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       setUser(user);
       setLoading(false);
@@ -95,6 +97,7 @@ function useProvideAuth() {
             // change to 2-fac screen
             console.log("2-fac auth success");
             setTwilioToken(res.data.token, () => {
+              localStorage.setItem("twilioToken", res.data.token);
               resolve();
             });
           }
@@ -147,6 +150,7 @@ const authContext = createContext({
 
 export function AuthProvider({ children }) {
   const auth = useProvideAuth();
+
   return <authContext.Provider value={auth}>{children}</authContext.Provider>;
 }
 
