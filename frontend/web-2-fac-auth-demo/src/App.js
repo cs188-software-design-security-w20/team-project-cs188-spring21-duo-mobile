@@ -157,6 +157,33 @@ function App() {
       });
   }
 
+  function postSong() {
+    if (!currentlyPlaying) {
+      // Should probably just hit the endpoint ourselves tbh but too lazy.
+      return window.alert("Cannot post song without getting your current song data fuckwad...");
+    }
+    navigator.geolocation.getCurrentPosition(async ({ coords }) => {
+      firebase
+        .auth()
+        .currentUser.getIdToken(true)
+        .then((loginToken) => {
+          const { latitude: lat, longitude: lng } = coords;
+          const songData = currentlyPlaying;
+          const authHeaders = {
+            login_token: loginToken,
+            two_fac_token: twoFacToken,
+          };
+          axios.post(`${BASE_URL}/api/songs`, {
+            lat,
+            lng,
+            songData
+          }, { headers: authHeaders }).then((res) => window.alert(`Posted successfully: ${JSON.stringify(res.data)}`));
+        });
+    }, (err) => {
+      window.alert("Cannot post song without location data fuckwad...");
+    })
+  }
+
   const Authenticated = () => {
     return (
       <div>
@@ -250,6 +277,9 @@ function App() {
                   .map((artist) => artist.name)
                   .join(", ")}`}
           </div>
+          <button onClick={postSong}>
+            share song
+          </button>
         </div>
       </div>
     );
