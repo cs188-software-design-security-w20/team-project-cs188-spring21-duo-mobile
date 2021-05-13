@@ -8,7 +8,21 @@ async function handleMe(req, res) {
   if (!user.exists) {
     return res.status(404).send('User not found');
   }
-  return res.status(200).send(user.data());
+  const entries = await db.collection('user_metadata')
+    .doc(req.locals.user.email)
+    .collection('song_entries')
+    .get();
+  const entriesArray = []
+  if (entries) {
+    entries.forEach((entry) => {
+      entriesArray.push(entry.data());
+    })
+  }
+
+  return res.status(200).send({
+    userData: user.data(),
+    userEntries: entriesArray
+  });
 }
 
 function getUserRoutes() {

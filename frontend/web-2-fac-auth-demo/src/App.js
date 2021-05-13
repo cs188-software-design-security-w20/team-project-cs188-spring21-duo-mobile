@@ -5,6 +5,7 @@ import axios from "axios";
 import "firebase/firestore";
 import { useState, useEffect } from "react";
 import SongMap from "./SongMap.js";
+import UserProfile from "./UserProfile";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_DEMO_FIREBASE_API_KEY,
@@ -344,6 +345,7 @@ function App() {
         <div>
           <Authenticated />
           <SongMap />
+          <UserProfile />
         </div>
       )}
     </div>
