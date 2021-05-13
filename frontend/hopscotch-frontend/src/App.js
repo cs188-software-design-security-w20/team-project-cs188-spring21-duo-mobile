@@ -10,6 +10,8 @@ import {
 } from "@geist-ui/react";
 import axios from "axios";
 import { AuthProvider, useAuth } from "./auth/authContext";
+import Homepage from "./components/Homepage";
+import TwoFacAuth from "./components/TwoFacAuth";
 
 const Page = styled.div`
   width: 100vw;
@@ -23,7 +25,7 @@ const Page = styled.div`
 const db = firebase.firestore();
 
 function App() {
-  const { user, loading, signInWithGoogle, signOut } = useAuth();
+  const { user, twilioToken, loading, signInWithGoogle, signOut } = useAuth();
   console.log("User,", user);
   if (loading) return <Fragment />;
   console.log("loaded");
@@ -31,6 +33,7 @@ function App() {
     <Page>
       {user ? (
         <Fragment>
+          {twilioToken ? <Homepage></Homepage> : <TwoFacAuth></TwoFacAuth>}
           <Button
             size="mini"
             onClick={() => {
