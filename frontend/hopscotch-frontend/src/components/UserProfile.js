@@ -4,6 +4,7 @@ import axios from "axios";
 import "firebase/firestore";
 import { useState, useEffect } from "react";
 import { useAuth } from "../auth/authContext";
+import { Button, Card, Collapse, Image, Spacer, Text, User } from "@geist-ui/react";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -41,52 +42,50 @@ const UserProfile = () => {
     <div>
       {loading ? <div></div> :
       <div>
-        Your profile
         <div>
-          Phone number:{" "}
-          {userData.phone}
-        </div>
-        Spotify
-        <div>
-            {userData.spotify_profile && userData.spotify_refresh_token ?
-            <div>
-              <div>
-                <a href={userData.spotify_profile.external_urls.spotify}>{userData.spotify_profile.display_name}</a><br />
-                <img src={userData.spotify_profile.images[0].url} width="128" height="128" />
-              </div>
-              Your song entries:
-              <div>
+          {userData.spotify_profile && userData.spotify_refresh_token ?
+            <Card width="100%">
+              <User src={userData.spotify_profile.images[0].url} name={userData.spotify_profile.display_name}>
+                {userData.phone}
+                <User.Link href={userData.spotify_profile.external_urls.spotify}>{userData.spotify_profile.uri}</User.Link>
+              </User>
+              <Spacer />
+              <Collapse title="Your song entries">
                 {userEntries.map(entry => (
-                  <div>
-                    <img src={entry.songData.album.images[1].url} /><br />
-                    {entry.songData.name}<br />
-                    {entry.songData.artists
+                  <div style={{display:"flex", flexWrap:"wrap"}}>
+                    <div style={{flex:"50%"}}><Image src={entry.songData.album.images[1].url} width={70} height={70} /></div>
+                    <div style={{flex:"50%"}}><Text small>
+                      <p>{entry.songData.name}<br/>
+                      {entry.songData.artists
                       .map((artist) => artist.name)
-                      .join(", ")}
+                      .join(", ")}</p>
+                    </Text></div>
                   </div>
                 ))}
-              </div>
-            </div>
+              </Collapse>
+            </Card>
             :
-            <button onClick={() => {
-              async function linkSpotify() {
-                const tokens = await getTokens();
-                return axios.get(
-                  `${BASE_URL}/api/spotify/link?redirectHost=${encodeURIComponent(
-                    BASE_URL
-                  )}`, { headers: tokens }
-                )
-                .then((res) => {
-                  if (res.status === 200) {
-                    window.open(res.data.authorizeURL, "_blank");
-                  }
-                });
-              }
-              linkSpotify();
-            }}
-            >
-              Link Spotify
-            </button>}
+            <Card width="100%">
+              <Button onClick={() => {
+                async function linkSpotify() {
+                  const tokens = await getTokens();
+                  return axios.get(
+                    `${BASE_URL}/api/spotify/link?redirectHost=${encodeURIComponent(
+                      BASE_URL
+                    )}`, { headers: tokens }
+                  )
+                  .then((res) => {
+                    if (res.status === 200) {
+                      window.open(res.data.authorizeURL, "_blank");
+                    }
+                  });
+                }
+                linkSpotify();
+              }}
+              >
+                Link Spotify
+              </Button>
+            </Card>}
         </div>
       </div>}
     </div>

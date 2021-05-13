@@ -38,6 +38,7 @@ export default function Homepage() {
     <Fragment>
       <Row gap={.8} style={{ height: "100vh" }}>
         <Col span={8}>
+          <UserProfile />
           <CurrentlyPlaying width={"100%"}/>
         </Col>
         <Col span={16}>
@@ -63,11 +64,6 @@ export default function Homepage() {
           </Card>
         </Col>
       </Row> */}
-      <Row>
-        <Col>
-          <UserProfile />
-        </Col>
-      </Row>
     </Fragment>
   );
 }
