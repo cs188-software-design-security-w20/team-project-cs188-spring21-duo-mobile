@@ -30,6 +30,8 @@ yarn install
 yarn start
 ```
 
+You will likely get an error on Chrome about localhost being insecure. This is because we need our localhost deployment to utilize HTTPS in order to have access to the geolocation API we use to post a song with location data. In order to bypass this error, visit chrome://flags/#allow-insecure-localhost, enable the setting, and relaunch Chrome.
+
 ## Backend
 
 Within the backend directory
