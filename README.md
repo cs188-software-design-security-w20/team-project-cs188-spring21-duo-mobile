@@ -2,20 +2,11 @@
 
 ## Frontend
 
-### React: Add `firebase-config.js`
-
-Add `firebase-config.js` to the file. Copy the config object from the Firebase console and export it.
+### React: Add `.env`
 
 ```
-export const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "...",
-  measurementId: "...",
-};
+REACT_APP_DEMO_FIREBASE_API_KEY=...
+REACT_APP_API_BASE_URL=http://localhost:5000 or https://hopscotch-backend.herokuapp.com depending on if you're testing locally or with deployed server
 ```
 
 ### iOS: Add config/cert files
