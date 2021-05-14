@@ -24,7 +24,7 @@ import {
 
 const Map = ReactMapboxGl({
   accessToken:
-    "pk.eyJ1IjoibWljaGFlbHcxIiwiYSI6ImNqdHdjdG9pNzI2eTY0NG80bGVsYmpremsifQ.r4_utQlXzN8ev_Dn7TtWxg",
+    "pk.eyJ1IjoibWljaGFlbHcxIiwiYSI6ImNrb29xYXkzZDAxOXMydWxrNm5mdTh2cjUifQ.BUPHP_fptDzgtWTc4mIhIA",
 });
 
 const SongMap = () => {
