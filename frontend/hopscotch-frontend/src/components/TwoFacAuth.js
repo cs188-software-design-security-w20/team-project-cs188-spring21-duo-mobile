@@ -118,13 +118,13 @@ function EnterVerifCodeStage({ onNext = () => {} }) {
   const [code, setCode] = useState("");
   const [loadingAuthSession, setLoadingAuthSession] = useState(false);
   const [loadingSendVerif, setLoadingSendVerif] = useState(false);
-  //   useEffect(() => {
-  //     setLoadingAuthSession(true);
-  //     startTwilioAuthSession().then(() => {
-  //       setLoadingAuthSession(false);
-  //     });
-  //     return () => {};
-  //   }, []);
+    useEffect(() => {
+      setLoadingAuthSession(true);
+      startTwilioAuthSession().then(() => {
+        setLoadingAuthSession(false);
+      });
+      return () => {};
+    }, []);
 
   return (
     <CenteringContainer>
