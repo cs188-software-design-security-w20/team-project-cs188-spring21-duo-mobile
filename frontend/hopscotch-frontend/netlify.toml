@@ -1,4 +1,5 @@
-[[headers]]
-    for = "/*"
-    [headers.values]
-        Access-Control-Allow-Origin = "*"
+[[redirects]]
+  from = "/api"
+  to = "https://hopscotch-backend.herokuapp.com/api"
+  status = 200
+  force = true
