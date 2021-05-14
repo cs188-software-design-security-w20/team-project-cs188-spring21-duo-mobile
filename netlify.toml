@@ -1,5 +1,5 @@
 [[redirects]]
-  from = "/api"
-  to = "https://hopscotch-backend.herokuapp.com/api"
+  from = "/api/*"
+  to = "https://hopscotch-backend.herokuapp.com/api/:splat"
   status = 200
   force = true
