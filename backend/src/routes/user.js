@@ -12,16 +12,16 @@ async function handleMe(req, res) {
     .doc(req.locals.user.email)
     .collection('song_entries')
     .get();
-  const entriesArray = []
+  const entriesArray = [];
   if (entries) {
     entries.forEach((entry) => {
       entriesArray.push(entry.data());
-    })
+    });
   }
 
   return res.status(200).send({
     userData: user.data(),
-    userEntries: entriesArray
+    userEntries: entriesArray,
   });
 }
 
