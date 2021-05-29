@@ -3,6 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const helmet = require('helmet');
 require('dotenv').config();
 
 const { getRoutes, getExternalRoutes } = require('./routes/index.js');
@@ -41,6 +42,9 @@ function debug(req, res, next) {
 
 function startServer({ port = process.env.PORT || 5000 } = {}) {
   const app = express();
+  // Add middleware for dns prefetch control,
+  // certificate transparency, sniffing control, xss filters
+  app.use(helmet());
   app.use(cors());
   app.use(bodyParser.json());
   app.use('/api', debug, getRoutes());
