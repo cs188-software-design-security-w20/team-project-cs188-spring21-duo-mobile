@@ -18,6 +18,7 @@
     "@firebase/app-types": "0.x",
     "@firebase/auth": "^0.16.5",
     "@firebase/util": "1.x",
+    "async-redis": "^2.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -25,8 +26,8 @@
     "firebase": "^8.4.3",
     "firebase-admin": "^9.7.0",
     "geofire-common": "^5.2.0",
+    "helmet": "^4.6.0",
     "moment": "^2.29.1",
-    "redis": "^3.1.2",
     "spotify-web-api-node": "^5.0.2",
     "twilio": "^3.61.0",
     "uuidv4": "^6.2.7"

@@ -1,6 +1,0 @@
-framework module Pods_hopscotch_hopscotchUITests {
-  umbrella header "Pods-hopscotch-hopscotchUITests-umbrella.h"
-
-  export *
-  module * { export * }
-}

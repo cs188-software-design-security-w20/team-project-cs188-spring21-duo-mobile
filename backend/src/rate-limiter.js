@@ -5,76 +5,73 @@ const RATE_LIMIT_WINDOW_HOURS = 3; // Window duration for which rate limiting sh
 const REQUEST_LIMIT_COUNT = 250; // Max number of requests per window
 const LOG_GROUP_WINDOW_HOURS = 1; // Rate limit window bucket duration
 
-const shouldRateLimit = (rateLimitKey) => {
+const shouldRateLimit = async (rateLimitKey) => {
   if (!redisClient) {
     throw new Error('Redis client not initialized');
   }
-  return redisClient.get(rateLimitKey, (err, val) => {
-    if (err) {
-      throw new Error('Error fetching from redis');
-    }
-    const currTime = moment();
-    if (!val && REQUEST_LIMIT_COUNT > 0) {
-      redisClient.set(
-        rateLimitKey,
-        JSON.stringify([
-          {
-            ts: currTime.unix(),
-            cnt: 1,
-          },
-        ]),
-        'EX',
-        RATE_LIMIT_WINDOW_HOURS * 60 * 60,
-      );
-      return false;
-    }
-    const data = JSON.parse(val);
-    const startTime = currTime.subtract(RATE_LIMIT_WINDOW_HOURS, 'h').unix();
-    let requestCountInWindow = 0;
-    const newData = data.filter((reqGroup) => {
-      if (reqGroup.ts > startTime) {
-        requestCountInWindow += reqGroup.cnt;
-        return true;
-      }
-      return false;
-    });
-    if (requestCountInWindow >= REQUEST_LIMIT_COUNT) {
-      redisClient.set(
-        rateLimitKey,
-        JSON.stringify(newData),
-        'EX',
-        RATE_LIMIT_WINDOW_HOURS * 60 * 60,
-      );
+  const initialVal = await redisClient.get(rateLimitKey);
+  const currTime = moment();
+  if (!initialVal && REQUEST_LIMIT_COUNT > 0) {
+    await redisClient.set(
+      rateLimitKey,
+      JSON.stringify([
+        {
+          ts: currTime.unix(),
+          cnt: 1,
+        },
+      ]),
+      'EX',
+      RATE_LIMIT_WINDOW_HOURS * 60 * 60,
+    );
+    return false;
+  }
+  const data = JSON.parse(initialVal);
+  const startTime = currTime.subtract(RATE_LIMIT_WINDOW_HOURS, 'h').unix();
+  let requestCountInWindow = 0;
+  const newData = data.filter((reqGroup) => {
+    if (reqGroup.ts > startTime) {
+      requestCountInWindow += reqGroup.cnt;
       return true;
     }
-    const logGroupStartTime = currTime
-      .subtract(LOG_GROUP_WINDOW_HOURS, 'h')
-      .unix();
-    if (
-      newData.length > 0
-      && newData[newData.length - 1].ts > logGroupStartTime
-    ) {
-      newData[newData.length - 1].cnt += 1;
-    } else {
-      newData.push({ ts: currTime.unix(), cnt: 1 });
-    }
-    redisClient.set(
+    return false;
+  });
+  if (requestCountInWindow >= REQUEST_LIMIT_COUNT) {
+    await redisClient.set(
       rateLimitKey,
       JSON.stringify(newData),
       'EX',
       RATE_LIMIT_WINDOW_HOURS * 60 * 60,
     );
-    return false;
-  });
+    return true;
+  }
+  const logGroupStartTime = currTime
+    .subtract(LOG_GROUP_WINDOW_HOURS, 'h')
+    .unix();
+  if (
+    newData.length > 0
+    && newData[newData.length - 1].ts > logGroupStartTime
+  ) {
+    newData[newData.length - 1].cnt += 1;
+  } else {
+    newData.push({ ts: currTime.unix(), cnt: 1 });
+  }
+  await redisClient.set(
+    rateLimitKey,
+    JSON.stringify(newData),
+    'EX',
+    RATE_LIMIT_WINDOW_HOURS * 60 * 60,
+  );
+  return false;
 };
 
 // Sliding window counter rate limiting middleware based on authenticated user email
-const userRateLimiterMiddleware = (req, res, next) => {
+const userRateLimiterMiddleware = async (req, res, next) => {
   try {
     if (!req.locals || !req.locals.user.email) {
       throw new Error('Invalid user rate limit');
     }
-    if (shouldRateLimit(req.locals.user.email)) {
+    const rateLimit = await shouldRateLimit(req.locals.user.email);
+    if (rateLimit) {
       return res.status(429).send({ error: 'Rate limit exceeded' });
     }
     return next();
@@ -84,9 +81,10 @@ const userRateLimiterMiddleware = (req, res, next) => {
 };
 
 // Sliding window counter rate limiting middleware based on request ip
-const ipRateLimiterMiddleware = (req, res, next) => {
+const ipRateLimiterMiddleware = async (req, res, next) => {
   try {
-    if (shouldRateLimit(req.ip)) {
+    const rateLimit = await shouldRateLimit(req.locals.user.email);
+    if (rateLimit) {
       return res.status(429).send({ error: 'Rate limit exceeded' });
     }
     return next();

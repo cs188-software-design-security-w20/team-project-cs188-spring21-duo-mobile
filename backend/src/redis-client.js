@@ -1,4 +1,4 @@
-const redis = require('redis');
+const redis = require('async-redis');
 
 const RedisClient = process.env.REDIS_URL // On Heroku, this is specified by redis add-on
   ? redis.createClient(process.env.REDIS_URL)
