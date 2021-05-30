@@ -57,7 +57,9 @@ async function handleNearbySongs(req, res) {
     const dCenter = [doc.get('lat'), doc.get('lng')];
     const distInKm = geofire.distanceBetween(dCenter, center);
     if (distInKm <= radius) {
-      result.push(doc.data());
+      songDoc = doc.data();
+      delete songDoc.ts;
+      result.push(songDoc);
     }
     return result;
   }, []));

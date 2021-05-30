@@ -28,7 +28,6 @@ export default function Homepage() {
   useEffect(() => {
     const init = async () => {
       const tokens = await getTokens();
-      console.log(tokens);
     };
     init();
 
