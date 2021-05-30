@@ -26,9 +26,7 @@ const db = firebase.firestore();
 
 function App() {
   const { user, twilioToken, loading, signInWithGoogle, signOut } = useAuth();
-  console.log("User,", user);
   if (loading) return <Fragment />;
-  console.log("loaded");
   return (
     <Page>
       {user ? (

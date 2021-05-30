@@ -49,7 +49,6 @@ const SongMap = () => {
         .then((res) => {
           if (res.status === 200) {
             setNearbySongs(res.data);
-            console.log(res.data);
           }
         });
     });

@@ -28,8 +28,6 @@ const UserProfile = () => {
       return axios
         .get(`${BASE_URL}/api/users/me`, { headers: tokens })
         .then((res) => {
-          console.log(res.data.userData);
-          console.log(res.data.userEntries);
           if (res.status === 200) {
             setUserData(res.data.userData);
             setUserEntries(res.data.userEntries);
