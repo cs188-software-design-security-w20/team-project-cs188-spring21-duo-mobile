@@ -53,9 +53,12 @@ function useProvideAuth() {
   };
 
   useEffect(() => {
-    const twilioToken = localStorage.getItem("twilioToken");
-    setTwilioToken(twilioToken);
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+      } else {
+        setTwilioToken(null);
+      }
+
       setUser(user);
       setLoading(false);
     });
@@ -72,8 +75,29 @@ function useProvideAuth() {
    */
   const startTwilioAuthSession = () => {
     return new Promise(async (resolve, reject) => {
+      // const twilioToken = localStorage.getItem("twilioToken");
+      // const idToken = await user.getIdToken();
+      // if (twilioToken) {
+      //   await axios
+      //     .post(
+      //       `${API_URL}/api/auth/verify2facToken`,
+      //       { two_fac_token: twilioToken },
+      //       { headers: { login_token: idToken } }
+      //     )
+      //     .then((res) => {
+      //       if (res.status == 200) {
+      //         console.log("yes");
+      //         resolve();
+      //         return;
+      //       } else {
+      //       }
+      //     })
+      //     .catch((e) => {});
+      // }
+
       const idToken = await user.getIdToken();
-      axios
+
+      await axios
         .get(`${API_URL}/api/auth/init2facSession`, {
           headers: { login_token: idToken },
         })
@@ -93,8 +117,9 @@ function useProvideAuth() {
   };
 
   const sendTwilioVerifCode = (code) => {
-    if (!twilioSessionId) return null;
     return new Promise(async (resolve, reject) => {
+      if (!twilioSessionId) reject();
+
       const idToken = await user.getIdToken();
       axios
         .post(

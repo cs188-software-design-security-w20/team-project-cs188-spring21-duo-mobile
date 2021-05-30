@@ -28,8 +28,10 @@
     "geofire-common": "^5.2.0",
     "helmet": "^4.6.0",
     "moment": "^2.29.1",
+    "random-number-csprng": "^1.0.2",
     "spotify-web-api-node": "^5.0.2",
     "twilio": "^3.61.0",
+    "uuid": "^8.3.2",
     "uuidv4": "^6.2.7"
   },
   "devDependencies": {
