@@ -1,9 +1,8 @@
-import firebase from "firebase/app";
 import "firebase/auth";
 import axios from "axios";
 import "firebase/firestore";
 import { useState, useEffect, Fragment } from "react";
-import ReactMapboxGl, { Layer, Feature, Marker, Popup } from "react-mapbox-gl";
+import ReactMapboxGl, { Marker, Popup } from "react-mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import currentLocationIcon from "../assets/you_are_here.png";
 import songMarkerIcon from "../assets/marker.png";
@@ -11,26 +10,16 @@ import { useAuth } from "../auth/authContext";
 import SongWidget from "./SongWidget";
 import {
   Button,
-  Text,
-  Spacer,
-  Row,
-  Col,
-  Input,
-  Card,
-  Image,
-  Divider,
-  Modal,
 } from "@geist-ui/react";
 
 const Map = ReactMapboxGl({
   accessToken:
-    "pk.eyJ1IjoibWljaGFlbHcxIiwiYSI6ImNrb29xYXkzZDAxOXMydWxrNm5mdTh2cjUifQ.BUPHP_fptDzgtWTc4mIhIA",
+    process.env.REACT_APP_MAPBOX_TOKEN,
 });
 
 const SongMap = () => {
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [userLocation, setUserLocation] = useState(null);
-  const [center, setCenter] = useState(null);
   const [selectedSong, setSelectedSong] = useState(null);
   const [nearbySongs, setNearbySongs] = useState([]);
   const [viewport, setViewport] = useState({});
@@ -49,7 +38,6 @@ const SongMap = () => {
         .then((res) => {
           if (res.status === 200) {
             setNearbySongs(res.data);
-            console.log(res.data);
           }
         });
     });
@@ -97,7 +85,6 @@ const SongMap = () => {
                 anchor="bottom"
                 onClick={() => {
                   setSelectedSong(song);
-                  setCenter([song.lng, song.lat]);
                 }}
               >
                 <img width="25" height="25" src={songMarkerIcon} />
@@ -118,7 +105,6 @@ const SongMap = () => {
                     <button
                       onClick={() => {
                         setSelectedSong(null);
-                        setCenter(userLocation);
                       }}
                     >
                       Close

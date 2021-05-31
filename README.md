@@ -1,3 +1,5 @@
+# CS188 Team Duo-Mobile
+
 # Hopscotch
 
 ## Frontend
@@ -6,30 +8,9 @@
 
 ```
 REACT_APP_DEMO_FIREBASE_API_KEY=...
-REACT_APP_API_BASE_URL=http://localhost:5000 or https://hopscotch-backend.herokuapp.com depending on if you're testing locally or with deployed server
+REACT_APP_API_BASE_URL=http://localhost:5000 // or https://hopscotch-backend.herokuapp.com depending on if you're testing locally or with deployed server
+REACT_APP_MAPBOX_TOKEN=
 ```
-
-### iOS: Add config/cert files
-
-Add the following files to `frontend/hopscotch/hopscotch/`:
-
-- `GoogleService-info.plist`: Downloaded from Firebase project
-- `Config.plist`: Configuring projects
-  - Key-value pairs:
-    - `API_URL`: Backend API URL. For example, "http://localhost:5000" for dev/
-      - Make sure there is no trailing slash at the end of the URL!
-
-### Authentication web demo
-
-This is primarily used for manual end-to-end testing of the authentication flow. Make sure that this demo runs smoothly after any changes to the auth API. This will not be deployed.
-
-## Create a .env file in `frontend/web-2-fac-auth-demo`
-
-```
-REACT_APP_DEMO_FIREBASE_API_KEY=...
-REACT_APP_API_BASE_URL=http://localhost:5000 or https://hopscotch-backend.herokuapp.com depending on if you're testing locally or with deployed server
-```
-
 ### Running the web app
 
 ```
@@ -78,14 +59,13 @@ yarn dev
 ```
 
 ### Running the server via docker compose
+You can use either docker compose or `yarn dev` to develop locally, though for docker compose you may have to rebuild each time you make a code change.
 
 From the backend directory:
 
 ```
 docker-compose up --build
 ```
-
-You can use either docker compose or `yarn dev` to develop locally, though for docker compose you may have to rebuild each time you make a code change.
 
 ### **Deploying container to Heroku**
 

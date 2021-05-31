@@ -104,7 +104,6 @@ function useProvideAuth() {
         .then((res) => {
           if (res.status == 200) {
             // change to 2-fac screen
-            console.log("main login success! Now on to 2-factor auth.");
             setTwilioSessionId(res.data.sessionId, () => {
               resolve();
             });
@@ -130,7 +129,6 @@ function useProvideAuth() {
         .then((res) => {
           if (res.status == 200) {
             // change to 2-fac screen
-            console.log("2-fac auth success");
             setTwilioToken(res.data.token, () => {
               localStorage.setItem("twilioToken", res.data.token);
               resolve();
