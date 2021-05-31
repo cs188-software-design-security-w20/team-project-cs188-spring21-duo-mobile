@@ -61,15 +61,6 @@ const CurrentlyPlaying = () => {
                         <Button onClick={fetchCurrentSong}>Refresh</Button>
                         <Button onClick={shareCurrentSong} disabled={currentSong == null}>Share</Button>
                     </ButtonGroup>
-                   
-                    {/* <Col>
-                        <Button onClick={fetchCurrentSong}>
-                            <Text>Share</Text>
-                        </Button>
-                    </Col>
-                    <Col>
-                        
-                    </Col> */}
                 </Row>
             </Card.Footer>
         </Card>
