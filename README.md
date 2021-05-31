@@ -9,7 +9,7 @@
 ```
 REACT_APP_DEMO_FIREBASE_API_KEY=...
 REACT_APP_API_BASE_URL=http://localhost:5000 // or https://hopscotch-backend.herokuapp.com depending on if you're testing locally or with deployed server
-MAPBOX_TOKEN=
+REACT_APP_MAPBOX_TOKEN=
 ```
 ### Running the web app
 
