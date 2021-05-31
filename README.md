@@ -1,3 +1,5 @@
+# CS188 Team Duo-Mobile
+
 # Hopscotch
 
 ## Frontend
